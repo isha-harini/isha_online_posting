@@ -46,6 +46,7 @@ event_date = raw_input("Enter when the event will happen(e.g. Sept 23): ")
 event_stime = raw_input("Enter event start time (e.g. 5:00PM): ")
 event_etime = raw_input("Enter event end time (e.g. 5:00PM): ")
 event_addr = raw_input("Enter event address: ")
+poster_path = raw_input("Enter complete path of the poster on your computer: ")
 
 is_correct = raw_input("Take a moment to verify.. Are all entered details correct(yes/no)? ")
 
@@ -286,7 +287,8 @@ try:
 finally:
 	try:
 		upload = browser.find_element_by_xpath(curpath)
-		upload.send_keys('/Users/harini/Documents/OneDrive - umich.edu/ISHA/PROMO/scripting/Isha Kriya Canton May 21 2018-1.jpg')
+		#upload.send_keys('/Users/harini/Documents/OneDrive - umich.edu/ISHA/PROMO/scripting/Isha Kriya Canton May 21 2018-1.jpg')
+		upload.send_keys(poster_path)
 
 	except:
 		print('Upload not found')
