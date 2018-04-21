@@ -14,9 +14,10 @@ from datetime import datetime
 ######### TO BE EDITED BY USER ################
 
 bgg_login = 'isha.harini.umich@gmail.com'
-bgg_password = 'Silver123'
+bgg_password = 'xxxx'
 
 ###############################################
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -28,6 +29,10 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+if bgg_password == 'xxxx':
+	print bcolors.FAIL + 'Please enter your login/password info for Big Green Gym in the script and retry' + bcolors.ENDC
+	exit()
+
 event_id = raw_input("Enter Event ID (1: Isha Kriya; 2: Yoga for Beginners; 3: Yoga for Success): ") 
 
 if(not int(event_id) or int(event_id) > 3):
@@ -36,9 +41,6 @@ if(not int(event_id) or int(event_id) > 3):
 else:
 	print bcolors.OKBLUE + "Please enter the following details for your event" + bcolors.ENDC
 
-##TODO: Temp restriction. Remove after adding Upa Yoga events
-if(not (int(event_id) == 1)):
-	print bcolors.FAIL + "Only Isha Kriya is supported for now. Exiting" + bcolors.ENDC 	  
 
 #Input event details
 event_area = raw_input("Enter Event Area. This will appear in the ad title. (e.g. Ann Arbor): ")
@@ -54,14 +56,31 @@ if(not is_correct.lower().startswith('y')):
 	print bcolors.FAIL + "Exiting the program. Restart the program and enter details again" + bcolors.ENDC
 	exit()
 
+event_name = ''
+desc_file = ''
+
+if(int(event_id) == 1):
+	#Isha Kriya
+	event_name = 'Meditation for Beginners'
+	desc_file = open("event_desc/isha_kriya.txt", "r")
+elif(int(event_id) == 2):
+	#Yoga for Beginners
+	event_name = 'Yoga for Beginners'
+	desc_file = open("event_desc/yoga_for_beginners.txt", "r")
+elif(int(event_id) == 3):
+	#Yoga for Success
+	event_name = 'Yoga for Success'
+	desc_file = open("event_desc/yoga_for_success.txt", "r")
+	
+
+
 #Generate Event title
 
-event_name = 'Meditation for Beginners-' + event_area + '-' + event_date + ' ' + event_stime
+event_name = event_name + '-' + event_area + '-' + event_date + ' ' + event_stime
 
 print bcolors.OKGREEN + "Posting " + event_name + bcolors.ENDC
 
 #Read event description
-desc_file = open("event_desc/isha_kriya.txt", "r")
 
 event_description = ''
 
@@ -115,7 +134,10 @@ passbox = browser.find_element_by_id('main_person_password')
 passbox.send_keys(bgg_password)
 passbox.submit()
 
-session_type = browser.find_element_by_partial_link_text('Meditation')
+if(int(event_id) == 1):
+	session_type = browser.find_element_by_partial_link_text('Meditation')
+else:
+	session_type = browser.find_element_by_partial_link_text('Yoga Basics')
 session_type.click()
 
 listing_type = browser.find_element_by_partial_link_text('Free session')
