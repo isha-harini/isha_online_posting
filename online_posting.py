@@ -14,10 +14,200 @@ from datetime import datetime
 ######### TO BE EDITED BY USER ################
 
 bgg_login = 'isha.harini.umich@gmail.com'
-bgg_password = 'xxxx'
+bgg_password = 'Silver123'
+
+tp_login = 'isha.harini.umich@gmail.com'
+tp_password = 'Silver123'
 
 ###############################################
 
+browser = webdriver.Chrome('/usr/local/bin/chromedriver')
+browser.get('https://www.townplanner.com/admin/events-ticket.php')
+wait = WebDriverWait(browser, 60)
+
+fid = 'login_email'
+loginbox = wait.until(EC.presence_of_element_located((By.ID, fid)))
+loginbox.send_keys(tp_login)
+
+fid = 'login_password'
+passbox = wait.until(EC.presence_of_element_located((By.ID, fid)))
+passbox.send_keys(tp_password)
+passbox.submit()
+
+curpath =  "//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'icon-event', ' ' ))]"
+events = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+events.click()
+
+curpath =  "//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'btnNew', ' ' ))]"
+all_new = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+all_new.click()
+
+fid = 'singleDay'
+box = wait.until(EC.presence_of_element_located((By.ID, fid)))
+box.click()
+
+fid = 'eventDate'
+box = wait.until(EC.presence_of_element_located((By.ID, fid)))
+box.click()
+
+
+#Keep clicking on Next till you reach the correct Month
+locpath = "//*[@id='ui-datepicker-div']/div/div/span[1]"
+idx = 0;
+event_month = 'apr'
+event_date = '23'
+while idx < 12:
+	idx = idx + 1
+	month = wait.until(EC.presence_of_element_located((By.XPATH, locpath)))
+	if event_month in month.text.lower():
+		break;
+	else:
+		next_ = browser.find_element_by_xpath(curpath)
+		next_.click()
+if idx > 11:
+	print 'Something went wrong'
+	exit()
+
+#Now select the date
+datepath = "//*[@id='ui-datepicker-div']/table/tbody/tr[1]/td[7]/a"
+date = wait.until(EC.presence_of_element_located((By.XPATH, datepath)))
+start_offset = 7 - int(date.text)
+event_date = int(event_date) + start_offset
+tr_id = event_date/7 + 1
+td_id = event_date - int(event_date/7)*7
+datepath = "//*[@id='ui-datepicker-div']/table/tbody/tr[" + str(tr_id) + "]/td[" + str(td_id) + "]/a"
+date = wait.until(EC.presence_of_element_located((By.XPATH, datepath)))
+date.click()
+
+event_stime = '10'
+event_etime = '11'
+event_s_am_pm = 'am'
+event_smin = '45'
+event_emin = '45'
+event_e_am_pm = 'am'
+#start hour
+starthourpath = "//*[@id='startTime']/select[1]"
+starthour = wait.until(EC.presence_of_element_located((By.XPATH, starthourpath)))
+start_time = str(event_stime) + event_s_am_pm
+
+for option in starthour.find_elements_by_tag_name('option'):
+	if option.text == start_time:
+		option.click()
+		break
+
+#startmin
+startminpath = "//*[@id='startTime']/select[2]"
+startmin = wait.until(EC.presence_of_element_located((By.XPATH, startminpath)))
+
+for option in startmin.find_elements_by_tag_name('option'):
+	if option.text == event_smin:
+		option.click()
+		break
+
+#end hour
+endhourpath = "//*[@id='endTime']/select[1]"
+endhour = wait.until(EC.presence_of_element_located((By.XPATH, endhourpath)))
+end_time = str(event_etime) + event_e_am_pm
+
+for option in endhour.find_elements_by_tag_name('option'):
+	if option.text == end_time:
+		option.click()
+		break
+#endmin
+endminpath = "//*[@id='endTime']/select[2]"
+endmin = wait.until(EC.presence_of_element_located((By.XPATH, endminpath)))
+for option in endmin.find_elements_by_tag_name('option'):
+	if option.text == event_emin:
+		option.click()
+		break
+
+event_name = 'Meditation for Beginners'
+event_descr = 'Event decription goes here .. '
+
+eventnamepath = "//*[@id='eventTitle']"
+eventname = wait.until(EC.presence_of_element_located((By.XPATH, eventnamepath)))
+eventname.send_keys(event_name)
+
+eventdescpath = "//*[@id='eventDescription']"
+eventdesc = wait.until(EC.presence_of_element_located((By.XPATH, eventdescpath)))
+eventdesc.send_keys(event_descr)
+
+event_zip = '48105'
+eventzippath = "//*[@id='zipcodeChoice']"
+eventzip = wait.until(EC.presence_of_element_located((By.XPATH, eventzippath)))
+eventzip.send_keys(event_zip)
+
+#TODO event community .. 
+
+eventcatpath = "//*[@id='eventCategory']"
+eventcat = wait.until(EC.presence_of_element_located((By.XPATH, eventcatpath)))
+for option in eventcat.find_elements_by_tag_name('option'):
+	if option.text == 'Local Events':
+		option.click()
+		break
+
+eventkeypath = "//*[@id='eventKeywords']"
+eventkey = wait.until(EC.presence_of_element_located((By.XPATH, eventkeypath)))
+eventkey.send_keys('Yoga, meditation')
+
+eventurlpath = "//*[@id='eventUrl']"
+eventurl = wait.until(EC.presence_of_element_located((By.XPATH, eventurlpath)))
+eventurl.send_keys('http://isha.sadhguru.org/yoga/yoga-programs/upa-yoga/')
+
+event_place = 'My Home'
+eventfacilitypath = "//*[@id='eventFacility']"
+eventfac = wait.until(EC.presence_of_element_located((By.XPATH, eventfacilitypath)))
+eventfac.send_keys(event_place)
+
+event_addr = '1929 Plymouth Road'
+eventaddrpath = "//*[@id='eventAddress']"
+eventaddr = wait.until(EC.presence_of_element_located((By.XPATH, eventaddrpath)))
+eventaddr.send_keys(event_addr)
+
+
+event_city = 'Ann Arbor'
+eventcitypath = "//*[@id='eventCity']"
+eventcity = wait.until(EC.presence_of_element_located((By.XPATH, eventcitypath)))
+eventcity.send_keys(event_city)
+
+event_state = 'MI'
+eventstatepath = "//*[@id='eventState']"
+eventstate = wait.until(EC.presence_of_element_located((By.XPATH, eventstatepath)))
+for option in eventstate.find_elements_by_tag_name('option'):
+	if option.text == event_state:
+		option.click()
+		break
+
+event_zip = '48105'
+eventzippath = "//*[@id='eventZip']"
+eventzip = wait.until(EC.presence_of_element_located((By.XPATH, eventzippath)))
+eventzip.send_keys(event_zip)
+
+
+elepath = "//*[@id='eventContact']"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, elepath)))
+ele.send_keys('Isha Detroit')
+
+elepath = "//*[@id='eventPhone']"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, elepath)))
+ele.send_keys('3134514742')
+
+elepath = "//*[@id='eventEmail']"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, elepath)))
+ele.send_keys('detroit@ishausa.org')
+
+elepath = "//*[@id='photo']"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, elepath)))
+ele.send_keys('/Users/harini/Documents/GitHub/isha_online_posting/Isha Kriya Canton May 21 2018-1.jpg')
+
+elepath = "//*[@id='eventPlacement']"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, elepath)))
+ele.click()
+
+
+exit()
+
+#Original code
 
 class bcolors:
     HEADER = '\033[95m'
@@ -121,7 +311,6 @@ split_date = re.split('(\d+)', event_date)
 event_month = split_date[0].lower()
 event_date = split_date[1]
 
-browser = webdriver.Chrome('/usr/local/bin/chromedriver')
 
 print bcolors.HEADER + "All set. Starting to post" + bcolors.ENDC
 
