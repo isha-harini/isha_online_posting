@@ -11,6 +11,9 @@ from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from datetime import datetime
 
+browser = webdriver.Chrome('/usr/local/bin/chromedriver')
+wait = WebDriverWait(browser, 60)
+
 ######### TO BE EDITED BY USER ################
 
 bgg_login = 'isha.harini.umich@gmail.com'
@@ -19,11 +22,190 @@ bgg_password = 'Silver123'
 tp_login = 'isha.harini.umich@gmail.com'
 tp_password = 'Silver123'
 
+tp_login = 'isha.harini.umich@gmail.com'
+tp_password = 'Silver123'
+
 ###############################################
 
-browser = webdriver.Chrome('/usr/local/bin/chromedriver')
+#browser.get('https://www.eventbrite.com/create')
+#
+#curpath =  "//*[@id='signin-email']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.send_keys(bgg_login)
+#
+#curpath =  "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/form/div[2]/button"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.click()
+#
+#curpath =  "//*[@id='password']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.send_keys(bgg_password)
+#
+#curpath = "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/div[2]/form/div[3]/button" 
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.click()
+#
+#exit()
+
+browser.get('http://myaccount.sulekha.com/signin?nexturl=http://myaccount.sulekha.com/post-an-event')
+
+dummy = raw_input("Enter your credentials and press enter")
+
+#curpath =  "//*[@id='txt_event_title']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.send_keys('Meditation for Beginners')
+#
+#curpath =  "//*[@id='alk_venue_autocomplete']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.click()
+#
+#curpath =  "//*[@id='txt_venue_name']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.send_keys('My home')
+#
+#curpath =  "//*[@id='txt_venue_address']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.send_keys('1929 Plymouth Road')
+#
+#curpath =  "//*[@id='txt_venue_city']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.send_keys('Ann Arbor')
+#
+#curpath =  "//*[@id='txt_venue_state']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.send_keys('Michigan')
+#
+#curpath =  "//*[@id='txt_venue_zip']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.send_keys('48105')
+#
+#curpath =  "//*[@id='lilanguage']/span[7]"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.click()
+#
+#curpath =  "//*[(@id = 'iTinyEditorArea_ifr')]"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.send_keys('Description goes here...')
+#
+##curpath =  "//*[@id='sel_org_list']"
+##ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+##ele.send_keys('Description goes here')
+#
+##curpath =  "//*[@id='txt_org_description']"
+##ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+##ele.send_keys('Description goes here')
+#
+#curpath =  "//*[@id='txt_hosted_by']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.send_keys('Description goes here')
+#
+#curpath =  "//*[@id='txt_org_contact']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.send_keys('Description goes here')
+
+##event start date
+#curpath =  "//*[@id='txt_event_startdate']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.clear()
+#ele.send_keys('05/23/2018')
+
+##event start time
+##start hour
+#starthourpath = "//*[@id='sel_event_starthour']"
+#starthour = wait.until(EC.presence_of_element_located((By.XPATH, starthourpath)))
+#start_time = '10'
+#
+#for option in starthour.find_elements_by_tag_name('option'):
+#	if option.text == start_time:
+#		option.click()
+#		break
+#
+##startmin
+#startminpath = "//*[@id='sel_event_startmin']"
+#startmin = wait.until(EC.presence_of_element_located((By.XPATH, startminpath)))
+#event_smin = '45'
+#
+#for option in startmin.find_elements_by_tag_name('option'):
+#	if option.text == event_smin:
+#		option.click()
+#		break
+#
+#curpath = "//*[@id='sel_event_startmeridiem']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#
+#for option in ele.find_elements_by_tag_name('option'):
+#	if option.text.lower() == 'am':
+#		option.click()
+#		break
+#
+##event end date
+#curpath =  "//*[@id='txt_event_enddate']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#ele.clear()
+#ele.send_keys('05/23/2018')
+#
+##event end time
+##end hour
+#endhourpath = "//*[@id='sel_event_endhour']"
+#endhour = wait.until(EC.presence_of_element_located((By.XPATH, endhourpath)))
+#end_time = '11'
+#
+#for option in endhour.find_elements_by_tag_name('option'):
+#	if option.text == end_time:
+#		option.click()
+#		break
+#
+##endmin
+#endminpath = "//*[@id='sel_event_endmin']"
+#endmin = wait.until(EC.presence_of_element_located((By.XPATH, endminpath)))
+#event_emin = '45'
+#
+#for option in endmin.find_elements_by_tag_name('option'):
+#	if option.text == event_emin:
+#		option.click()
+#		break
+#
+#curpath = "//*[@id='sel_event_endmeridiem']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+#
+#for option in ele.find_elements_by_tag_name('option'):
+#	if option.text.lower() == 'am':
+#		option.click()
+#		break
+#
+
+curpath = "//*[@id='div_imgcont_thumbnail']/label/span"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+ele.click()
+curpath = "//*[@id='frm_event_post']/main/div[1]/div[2]/section/div[1]/div/div[1]/div/div[3]/label"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+ele.click()
+#ele.send_keys('/Users/harini/Documents/GitHub/isha_online_posting/homepage-sliders-IshaFoundation.jpg')
+
+exit()
+
+#Keep clicking on Next till you reach the correct Month
+locpath = "//*[@id='ui-datepicker-div']/div/div/span[1]"
+idx = 0;
+event_month = 'apr'
+event_date = '23'
+while idx < 12:
+	idx = idx + 1
+	month = wait.until(EC.presence_of_element_located((By.XPATH, locpath)))
+	if event_month in month.text.lower():
+		break;
+	else:
+		next_ = browser.find_element_by_xpath(curpath)
+		next_.click()
+if idx > 11:
+	print 'Something went wrong'
+	exit()
+
+
+
+exit()
+
 browser.get('https://www.townplanner.com/admin/events-ticket.php')
-wait = WebDriverWait(browser, 60)
 
 fid = 'login_email'
 loginbox = wait.until(EC.presence_of_element_located((By.ID, fid)))
