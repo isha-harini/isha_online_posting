@@ -18,6 +18,21 @@ bgg_password = 'xxxx'
 
 ###############################################
 
+browser = webdriver.Chrome('/usr/local/bin/chromedriver')
+wait = WebDriverWait(browser, 60)
+
+
+################# EVENTBRITE TESTING ###########################
+
+#testing here so that we can exit before all the fancy input stuff!
+
+
+
+
+
+exit()
+###################################################################
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -121,9 +136,17 @@ split_date = re.split('(\d+)', event_date)
 event_month = split_date[0].lower()
 event_date = split_date[1]
 
-browser = webdriver.Chrome('/usr/local/bin/chromedriver')
 
 print bcolors.HEADER + "All set. Starting to post" + bcolors.ENDC
+
+############################################## EVENTBRITE ######################################################
+
+
+
+
+
+
+############################################## BIG GREEN GYM ######################################################
 
 browser.get('https://www.thebiggreengym.com/en/listings/new')
 
@@ -147,7 +170,6 @@ listing_type.click()
 
 try:
 	curpath =  "//*[(@id = 'listing_title')]"
-	wait = WebDriverWait(browser, 60)
 	element = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
 finally:
 	try:
