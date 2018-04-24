@@ -11,3 +11,8 @@ You will need to install the following onto your computer before running the scr
   
   After all packages are installed, to run the script just type 
       python online_script.py
+
+
+###Advanced STUFF###
+To access google sheets directly from the script, follow this: http://gspread.readthedocs.io/en/latest/oauth2.html and https://github.com/burnash/gspread
+
