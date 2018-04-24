@@ -14,7 +14,7 @@ from datetime import datetime
 ######### TO BE EDITED BY USER ################
 
 bgg_login = 'isha.harini.umich@gmail.com'
-bgg_password = 'xxxx'
+bgg_password = 'Silver123'
 
 ###############################################
 
@@ -25,7 +25,146 @@ wait = WebDriverWait(browser, 60)
 ################# EVENTBRITE TESTING ###########################
 
 #testing here so that we can exit before all the fancy input stuff!
+browser.get('https://www.eventbrite.com/create')
 
+#login and password
+
+curpath =  "//*[@id='signin-email']"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+ele.send_keys(bgg_login)
+
+curpath =  "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/form/div[2]/button"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+ele.click()
+
+curpath =  "//*[@id='password']"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+ele.send_keys(bgg_password)
+
+curpath = "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/div[2]/form/div[3]/button" 
+ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+ele.click()
+
+#actual event
+
+##event title
+#path = "//*[@id='id_group-details-name']"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#ele.send_keys('Meditation for Beginners')
+#
+##location
+#
+##enter address click
+#path = "//*[@id='create_location_content']/div/div/ul/li[2]/a"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#ele.click()
+#ele.click()
+#
+##venue name
+#path = "//*[@id='location_edit_form']/div[1]/input[1]"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#ele.send_keys('Venue Name input')
+#
+##address line 1
+#path = "//*[@id='location_edit_form']/div[1]/input[2]"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#ele.send_keys('Address Line 1')
+#
+##address line 2
+#path = "//*[@id='location_edit_form']/div[1]/input[3]"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#ele.send_keys('Address Line 2')
+#
+##city
+#path = "//*[@id='location_edit_form']/div[1]/input[4]"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#ele.send_keys('Ann Arbor')
+#
+##state
+#path = "//*[@id='location_edit_form']/div[2]/div[1]/input"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#ele.send_keys('Michigan')
+#
+##zip
+#path = "//*[@id='location_edit_form']/div[2]/div[2]/input"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#ele.send_keys('48105')
+#
+##country
+#path = "//*[@id='location_edit_form']/div[2]/div[3]/div/select"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#for option in ele.find_elements_by_tag_name('option'):
+#	if option.text == 'United States':
+#			option.click()
+#			break
+#
+##print 'Country complete'
+#
+###start date -- clear and type in the date
+#path = "//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'hasDatepicker', ' ' ))]" 
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#ele = browser.find_elements_by_xpath(path)
+#ele[0].click()
+#ele[0].clear()
+#ele[0].send_keys('04/23/2018')
+#
+##end date
+#ele[1].click()
+#ele[1].clear()
+#ele[1].send_keys('04/24/2018')
+#
+##start time --clear and type in the time
+#path = "//*[@id='event_details_date']/div/div[1]/div[1]/div[1]/div/div[2]/input"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#ele.clear()
+#
+##end time
+#path = "//*[@id='event_details_date']/div/div[1]/div[1]/div[2]/div/div[2]/input"
+#ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#ele.clear()
+#print 'Time complete'
+
+#event image
+#path = "//*[@id='event_details_logo']/div[2]/div[1]/div[2]/section[1]/div/div/div/div/div/div[1]/a"
+path = "//*[@id='uploader-file-input-id']"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+ele.send_keys('/Users/harini/Documents/GitHub/isha_online_posting/Isha.jpg')
+print 'Image complete'
+
+path = "//*[@id='croploader-c186']/div/div"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#ele.click()
+
+exit()
+
+#event description
+path = "//*[(@id = 'id_group-details-description_ifr')]"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+#ele = wait.until(EC.presence_of_element_located((By.CLASS_NAME, classname)))
+print 'Event description complete'
+
+#org name
+path = "//*[@id='id_group-organizer-organizers-0-organization_name']"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+print 'Org name complete'
+
+#org description
+path = "//*[(@id = 'id_group-organizer-organizers-0-organization_desc_ifr')]"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+print 'Org descr complete'
+
+#event type
+path = "//*[@id='id_group-privacy_and_promotion-event_format']"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+print 'Event type complete'
+
+
+#event topic
+path = "//*[@id='id_group-privacy_and_promotion-event_category']"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+print 'Event topic complete'
+
+exit()
 
 
 
