@@ -131,9 +131,9 @@ ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
 ele.send_keys('/Users/harini/Documents/GitHub/isha_online_posting/Isha.jpg')
 print 'Image complete'
 
-path = "//*[@id='croploader-c186']/div/div"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-#ele.click()
+text = 'DONE'
+ele = wait.until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, text)))
+ele.click()
 
 exit()
 
