@@ -11,3 +11,6 @@ You will need to install the following onto your computer before running the scr
   
   After all packages are installed, to run the script just type 
       python online_script.py
+
+Update:
+The script can now pick the event details directly from the google sheet! Contact author for more info.

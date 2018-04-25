@@ -26,41 +26,19 @@ class bcolors:
 
 month_list = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 
-browser = webdriver.Chrome('/usr/local/bin/chromedriver')
-wait = WebDriverWait(browser, 60)
 
 ######### TO BE EDITED BY USER ################
 
-eb_login = 'isha.harini.umich@gmail.com'
-eb_password = 'Silver123'
+#eb_login = 'isha.harini.umich@gmail.com'
+#eb_password = 'Silver123'
+eb_login = 'detroit@ishausa.org'
+eb_password = 'j0y247LetUsMakeitHappen!'
 
 ################## FLAGS ######################
 DEBUG = 0 # 1 - Enable DEBUG; 0 - Disable DEBUG
 
-GSHEET = 1 # 1 - Enable input read from Google Sheet; 0 - Disable input read from Google Sheet
+GSHEET = 0 # 1 - Enable input read from Google Sheet; 0 - Disable input read from Google Sheet
 
-################# EVENTBRITE ###########################
-
-#testing here so that we can exit before all the fancy input stuff!
-browser.get('https://www.eventbrite.com/create')
-
-#login and password
-
-curpath =  "//*[@id='signin-email']"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
-ele.send_keys(eb_login)
-
-curpath =  "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/form/div[2]/button"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
-ele.click()
-
-curpath =  "//*[@id='password']"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
-ele.send_keys(eb_password)
-
-curpath = "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/div[2]/form/div[3]/button" 
-ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
-ele.click()
 
 #Event details - defaults for testing
 event_id = '1'
@@ -85,6 +63,7 @@ else:
 
 #Event details - get it from user
 if DEBUG == 0 and GSHEET == 0:
+	print bcolors.HEADER + 'The script can now read event details directly from the spreadsheet instead of you typing it in. Check with the owner for the settings if you will prefer that. Enter the details about the event below' + bcolors.ENDC
 	#event type
 	event_id = raw_input("Enter Event ID (1: Isha Kriya; 2: Yoga for Beginners; 3: Yoga for Success): ") 
 
@@ -136,7 +115,7 @@ if DEBUG == 0 and GSHEET == 0:
 if GSHEET == 1:
 	event_column = 'A'
 	if DEBUG == 0:
-		event_column = raw_input("Enter event column in the spreadsheet")
+		event_column = raw_input("Enter event column in the spreadsheet (e.g. AH): ")
 	import gspread
 	from oauth2client.service_account import ServiceAccountCredentials
 
@@ -171,17 +150,17 @@ if GSHEET == 1:
 	#now convert the obtained input into what the rest of the script requires .. 
 	if(evname == 'MFB'):
 		#Isha Kriya
-		event_name = 'Meditation for Beginners'
+		event_name = 'Meditation for Beginners - Isha Foundation'
 		desc_file = open("event_desc/isha_kriya.txt", "r")
 		poster_path = '/Users/harini/Documents/GitHub/isha_online_posting/posters/ishakriya.jpg'
 	elif(evname == YFB):
 		#Yoga for Beginners
-		event_name = 'Yoga for Beginners'
+		event_name = 'Yoga for Beginners - Isha Foundation'
 		desc_file = open("event_desc/yoga_for_beginners.txt", "r")
 		poster_path = '/Users/harini/Documents/GitHub/isha_online_posting/posters/yfb.jpg'
 	elif(evname == YFS):
 		#Yoga for Success
-		event_name = 'Yoga for Success'
+		event_name = 'Yoga for Success - Isha Foundation'
 		desc_file = open("event_desc/yoga_for_success.txt", "r")
 		poster_path = '/Users/harini/Documents/GitHub/isha_online_posting/posters/yfs.jpg'
 
@@ -195,7 +174,35 @@ if GSHEET == 1:
 	split_time = re.split(r"[to-]", evtime)
 	event_stime = split_time[0]
 	event_etime = split_time[len(split_time)-1]
+
+print bcolors.OKBLUE + "Remind yourself of the tools of Inner Engineering while the script prefills the fields .." + bcolors.ENDC
+####################################### ACTUAL START OF THE SCRIPT! ################
 	
+browser = webdriver.Chrome('/usr/local/bin/chromedriver')
+wait = WebDriverWait(browser, 60)
+
+################# EVENTBRITE ###########################
+
+#testing here so that we can exit before all the fancy input stuff!
+browser.get('https://www.eventbrite.com/create')
+
+#login and password
+
+curpath =  "//*[@id='signin-email']"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+ele.send_keys(eb_login)
+
+curpath =  "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/form/div[2]/button"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+ele.click()
+
+curpath =  "//*[@id='password']"
+ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+ele.send_keys(eb_password)
+
+curpath = "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/div[2]/form/div[3]/button" 
+ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+ele.click()
 
 #actual event
 
