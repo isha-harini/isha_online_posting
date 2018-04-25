@@ -37,7 +37,7 @@ eb_password = 'Silver123'
 ################## FLAGS ######################
 DEBUG = 0 # 1 - Enable DEBUG; 0 - Disable DEBUG
 
-GSHEET = 0 # 1 - Enable input read from Google Sheet; 0 - Disable input read from Google Sheet
+GSHEET = 1 # 1 - Enable input read from Google Sheet; 0 - Disable input read from Google Sheet
 
 ################# EVENTBRITE ###########################
 
@@ -134,22 +134,20 @@ if DEBUG == 0 and GSHEET == 0:
 
 #TODO: GSheet integration
 if GSHEET == 1:
+	event_column = 'A'
+	if DEBUG == 0:
+		event_column = raw_input("Enter event column in the spreadsheet")
 	import gspread
 	from oauth2client.service_account import ServiceAccountCredentials
 
 	scope = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
 
-	credentials = ServiceAccountCredentials.from_json_keyfile_name('IshaOnlinePosting-f601765b7565.json', scope)
+	credentials = ServiceAccountCredentials.from_json_keyfile_name('gsheet/IshaOnlinePosting-f601765b7565.json', scope)
 
 	gc = gspread.authorize(credentials)
 
 	testsheet = gc.open("Online_posting_test_sheet").sheet1
-	testsheet = gc.open("Online_posting_test_sheet").sheet1
-
-	#event_column = raw_input("Enter the ColumnID of the event in the spreadsheet (e.g. AH)")
-
-	event_column = 'A'
 
 	#hardcoding row numbers for various details
 	r_evname = 1
@@ -163,12 +161,40 @@ if GSHEET == 1:
 	
 	evname = testsheet.acell(event_column + str(r_evname)).value
 	evday = testsheet.acell(event_column + str(r_evday)).value
-	evdate = testsheet.acell(event_column + str(r_evdate)).value
+	event_date = testsheet.acell(event_column + str(r_evdate)).value
 	evtime = testsheet.acell(event_column + str(r_evtime)).value
-	evloc = testsheet.acell(event_column + str(r_evloc)).value
-	evaddr = testsheet.acell(event_column + str(r_evaddr)).value
-	evcity = testsheet.acell(event_column + str(r_evcity)).value
-	evzip = testsheet.acell(event_column + str(r_evzip)).value
+	event_venue = testsheet.acell(event_column + str(r_evloc)).value
+	event_addr = testsheet.acell(event_column + str(r_evaddr)).value
+	event_city = testsheet.acell(event_column + str(r_evcity)).value
+	event_zip = testsheet.acell(event_column + str(r_evzip)).value
+
+	#now convert the obtained input into what the rest of the script requires .. 
+	if(evname == 'MFB'):
+		#Isha Kriya
+		event_name = 'Meditation for Beginners'
+		desc_file = open("event_desc/isha_kriya.txt", "r")
+		poster_path = '/Users/harini/Documents/GitHub/isha_online_posting/posters/ishakriya.jpg'
+	elif(evname == YFB):
+		#Yoga for Beginners
+		event_name = 'Yoga for Beginners'
+		desc_file = open("event_desc/yoga_for_beginners.txt", "r")
+		poster_path = '/Users/harini/Documents/GitHub/isha_online_posting/posters/yfb.jpg'
+	elif(evname == YFS):
+		#Yoga for Success
+		event_name = 'Yoga for Success'
+		desc_file = open("event_desc/yoga_for_success.txt", "r")
+		poster_path = '/Users/harini/Documents/GitHub/isha_online_posting/posters/yfs.jpg'
+
+	if desc_file.mode == 'r':
+		event_desc = desc_file.read()
+	else:
+		print('Something went wrong')
+		exit()
+
+	#split evtime into start time and end time
+	split_time = re.split(r"[to-]", evtime)
+	event_stime = split_time[0]
+	event_etime = split_time[len(split_time)-1]
 	
 
 #actual event
@@ -252,7 +278,10 @@ ele[1].send_keys(in_date)
 #Fix the start time
 event_stime = ''.join(event_stime.split()) #remove all whitespace characters
 event_stime = event_stime.lower()
-event_stime = event_stime.replace('.', '') #remove dot from a.m, p.m.
+event_stime = event_stime.replace('a.m', 'am') #remove dot from a.m, p.m.
+event_stime = event_stime.replace('p.m', 'pm') #remove dot from a.m, p.m.
+event_stime = event_stime.replace('.', ':') #remove dot from a.m, p.m.
+event_stime = event_stime.replace(';', ':') #remove dot from a.m, p.m.
 split_stime = ''
 event_am_pm = ''
 if "am" in event_stime:
@@ -275,7 +304,10 @@ ele.send_keys(new_stime)
 #Fix the end time
 event_etime = ''.join(event_etime.split()) #remove all whitespace characters
 event_etime = event_etime.lower()
-event_etime = event_etime.replace('.', '') #remove dot from a.m, p.m.
+event_etime = event_etime.replace('a.m', 'am') #remove dot from a.m, p.m.
+event_etime = event_etime.replace('p.m', 'pm') #remove dot from a.m, p.m.
+event_etime = event_etime.replace('.', ':') #remove dot from a.m, p.m.
+event_etime = event_etime.replace(';', ':') #remove dot from a.m, p.m.
 split_etime = ''
 event_am_pm = ''
 if "am" in event_stime:
