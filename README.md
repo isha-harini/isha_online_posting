@@ -7,11 +7,22 @@ You will need to install the following onto your computer before running the scr
   3. Chromedriver - this package helps selenium to interact with chrome. You could install firefox/any other browser driver instead - in which case you have to modify the script. So, unless you have a strong reason not to use Chrome, just stick with it.
   
   These are the packages we needed to run on a Mac. Running on Windows may have different requirements..
-  
   We run it on the Terminal for Mac. You might have to run it on Command Prompt or download a csh shell to run on Windows. We can make this a Windows executable -- that is future work.
   
-  After all packages are installed, to run the script just type 
+  The script comes in 2 flavors: (1) User enters event details on the command line (2) User just mentions the column number in to the script and the script reads directly from the Online Promotions Google Sheet. (this will require additional packages and permissions TODO: Update them on this page)
+  
+  To test if all required packages are installed for (1)
+  
+      python hello_world.py
+      
+  To test if all packages & permission files are installed for (2)
+  
+      python hello_world_gsheet.py
+      
+  To run the script just type 
+  
       python online_script.py
+
 
 Update:
 The script can now pick the event details directly from the google sheet! Contact author for more info.
