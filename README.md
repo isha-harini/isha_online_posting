@@ -1,5 +1,5 @@
 # isha_online_posting
-Script for posting to free websites 
+Script for posting to the websites 
 You will need to install the following onto your computer before running the script:
   1. Python - Install the python package .. not the snake. The scripting language ;-)
   2. Selenium - this is the package that helps us interact with the websites
@@ -14,3 +14,6 @@ You will need to install the following onto your computer before running the scr
 
 Update:
 The script can now pick the event details directly from the google sheet! Contact author for more info.
+
+Currently works for:
+1. Eventbrite
