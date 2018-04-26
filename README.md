@@ -21,7 +21,7 @@ You will need to install the following onto your computer before running the scr
       
   To run the script just type 
   
-      python online_script.py
+      python online_posting.py
 
 
 Update:
