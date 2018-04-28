@@ -409,7 +409,7 @@ elif DEBUG == 0:
 	scope = ['https://spreadsheets.google.com/feeds',
          	'https://www.googleapis.com/auth/drive']
 
-	credentials = ServiceAccountCredentials.from_json_keyfile_name('gsheet/IshaOnlinePosting-f601765b7565.json', scope)
+	credentials = ServiceAccountCredentials.from_json_keyfile_name('IshaOnlinePosting.json', scope)
 
 	gc = gspread.authorize(credentials)
 
