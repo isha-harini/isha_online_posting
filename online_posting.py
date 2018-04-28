@@ -1,4 +1,44 @@
-#!/usr/bin/env python
+#NOTE: share the google sheet with harini@ishaonlineposting.iam.gserviceaccount.com
+#To read from a cell: testsheet.acell(CELL).value; to write: esheet.update_acell(C_EVENT_TYPE + str(ev_idx), new_name)
+
+############################# SETTINGS ################################
+
+#FLAGS
+DEBUG = 0 #Debug event posting by turning off GSHEET reading
+
+#Copy and paste the workbook URL here:
+WORKBOOKURL = 'https://docs.google.com/spreadsheets/d/1X7WS6spYZfV2o40Hy2e_D9jZcOD3mlQ6yjcN3UZykDQ/edit?ts=5ae13571#gid=0'
+
+#Column names of different event details
+C_EVENT_TYPE = 'A'
+C_POSTING_STATUS = 'B'
+C_DATE = 'F'
+C_START_TIME = 'G'
+C_END_TIME = 'H'
+C_VENUE = 'I'
+C_ADDR_LINE1 = 'J'
+C_ADDR_LINE2 = 'K'
+C_CITY = 'L'
+C_STATE = 'M'
+C_ZIP = 'N'
+START_ROW = 2
+
+#login details
+#Eventbrite
+eb_login = 'detroit@ishausa.org'
+eb_password = 'j0y247LetUsMakeitHappen!'
+
+#Patch
+patch_login = 'isha.harini.umich@gmail.com'
+patch_password = 'Dhyanalinga247'
+
+#State name - code dictionary
+state_name = {
+	'MI' : 'Michigan'
+
+	}
+
+#################################################################################
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -14,6 +54,7 @@ from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from datetime import datetime
 
+#prettifies the cmd line
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -24,380 +65,516 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-month_list = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+browser_eb = []
+browser_pat = []
 
 
-######### TO BE EDITED BY USER ################
+#Eventbrite posting
+def eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+				ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+					ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url): 
 
-#eb_login = 'isha.harini.umich@gmail.com'
-#eb_password = 'Silver123'
-eb_login = 'detroit@ishausa.org'
-eb_password = 'j0y247LetUsMakeitHappen!'
-
-################## FLAGS ######################
-DEBUG = 0 # 1 - Enable DEBUG; 0 - Disable DEBUG
-
-GSHEET = 0 # 1 - Enable input read from Google Sheet; 0 - Disable input read from Google Sheet
-
-
-#Event details - defaults for testing
-event_id = '1'
-event_name = 'TODO'
-event_venue = 'TODO'
-event_date = 'Sept 23'
-event_stime = '5:00PM'
-event_etime = '6:00PM'
-event_addr = 'Isha Yoga Center'
-event_city = 'Ann Arbor'
-event_zip = '48105'
-event_year = 2018
-event_desc = 'Whatever you can do or cannot do, learn how to be'
-poster_path = '/Users/harini/Documents/GitHub/isha_online_posting/posters/ishakriya.jpg'
-org_desc_file = open('event_desc/isha_general.txt', 'r')
-org_desc = ''
-if org_desc_file.mode == 'r':
-	org_desc = org_desc_file.read()
-else:
-	print('Something went wrong')
-	exit()
-
-#Event details - get it from user
-if DEBUG == 0 and GSHEET == 0:
-	print bcolors.HEADER + 'The script can now read event details directly from the spreadsheet instead of you typing it in. Check with the owner for the settings if you will prefer that. Enter the details about the event below' + bcolors.ENDC
-	#event type
-	event_id = raw_input("Enter Event ID (1: Isha Kriya; 2: Yoga for Beginners; 3: Yoga for Success): ") 
-
-	if(not int(event_id) or int(event_id) > 3):
-		print bcolors.FAIL + "Invalid EventID. Exiting" + bcolors.ENDC
-		exit()
-	else:
-		print bcolors.OKBLUE + "Please enter the following details for your event" + bcolors.ENDC
-
-	#other event details
-	event_date = raw_input("Enter when the event will happen(e.g. Sept 23): ")
-	event_stime = raw_input("Enter event start time (e.g. 5:00PM): ")
-	event_etime = raw_input("Enter event end time (e.g. 5:00PM): ")
-	event_venue = raw_input("Enter event venue name: ")
-	event_addr = raw_input("Enter event address Line 1: ")
-	event_city = raw_input("Enter Event City. (e.g. Ann Arbor): ")
-	event_zip = raw_input("Enter Event Zip code (e.g. 48105): ")
+	browser_eb.append(webdriver.Chrome('/usr/local/bin/chromedriver'))
+	browser = browser_eb[len(browser_eb)-1]
+	wait = WebDriverWait(browser, 60)
+	browser.get('https://www.eventbrite.com/create')
 	
-	#ask for verification	
-	is_correct = raw_input("Take a moment to verify.. Are all entered details correct(yes/no)? ")
-	if(not is_correct.lower().startswith('y')):
-		print bcolors.FAIL + "Exiting the program. Restart the program and enter details again" + bcolors.ENDC
-		exit()
+	#login and password
+	
+	curpath =  "//*[@id='signin-email']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+	ele.send_keys(eb_login)
+	
+	curpath =  "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/form/div[2]/button"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+	ele.click()
+	
+	curpath =  "//*[@id='password']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+	ele.send_keys(eb_password)
+	
+	curpath = "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/div[2]/form/div[3]/button" 
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
+	ele.click()
+	
+	#actual event
+	
+	path = "//*[@id='id_group-details-name']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_name)
+	
+	#location
+	
+	#enter address click
+	path = "//*[@id='create_location_content']/div/div/ul/li[3]/a"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.click()
+	ele.click()
+	
+	#venue name
+	path = "//*[@id='location_edit_form']/div[1]/input[1]"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_venue)
+	
+	#address line 1
+	path = "//*[@id='location_edit_form']/div[1]/input[2]"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_addr_l1)
+	
+	#address line 2
+	path = "//*[@id='location_edit_form']/div[1]/input[3]"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_addr_l2)
+	
+	#city
+	path = "//*[@id='location_edit_form']/div[1]/input[4]"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_city)
+	
+	#state -- hardcoding for now ..
+	path = "//*[@id='location_edit_form']/div[2]/div[1]/input"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_state)
+	
+	#zip
+	path = "//*[@id='location_edit_form']/div[2]/div[2]/input"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_zip)
+	
+	#country -- hardcoding for now ..
+	path = "//*[@id='location_edit_form']/div[2]/div[3]/div/select"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	for option in ele.find_elements_by_tag_name('option'):
+		if option.text == 'United States':
+				option.click()
+				break
+	
+	
+	#start date -- clear and type in the date
+	path = "//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'hasDatepicker', ' ' ))]" 
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele = browser.find_elements_by_xpath(path)
+	ele[0].click()
+	ele[0].clear()
+	in_date = str(ev_month) + '/' + str(ev_date) + '/' + str(ev_year)
+	ele[0].send_keys(in_date)
+	
+	#end date
+	ele[1].click()
+	ele[1].clear()
+	ele[1].send_keys(in_date)
+	
+	#Fix the start time
+	new_stime = ev_shour + ':' + ev_smin + ev_sampm
+	
+	#start time --clear and type in the time
+	path = "//*[@id='event_details_date']/div/div[1]/div[1]/div[1]/div/div[2]/input"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.clear()
+	ele.send_keys(new_stime)
+	
+	#Fix the end time
+	new_etime = ev_ehour + ':' + ev_emin + ev_eampm
+	
+	#end time
+	path = "//*[@id='event_details_date']/div/div[1]/div[1]/div[2]/div/div[2]/input"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.clear()
+	ele.send_keys(new_etime)
+	time.sleep(2)
+	
+	for i in range(1, 6):
+		actions = ActionChains(browser)
+		actions.send_keys(Keys.TAB)
+		actions.perform()
+		time.sleep(1)
+	
+	actions.send_keys(Keys.TAB)
+	actions.perform()
+	time.sleep(1)
+	actions = ActionChains(browser)
+	actions.send_keys(ev_desc)
+	actions.perform()
+	time.sleep(3)
+	
+	#event image
+	path = "//*[@id='uploader-file-input-id']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_poster)
+	time.sleep(3)
+	text = 'DONE'
+	ele = wait.until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, text)))
+	ele.click()
+	time.sleep(6)
+	
+	
+	path = "//*[@id='id_group-organizer-organizer']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	for option in ele.find_elements_by_tag_name('option'):
+		if 'Isha Foundation' in option.text:
+				option.click()
+				break
+	
+	time.sleep(3)
+	
+	#event type
+	path = "//*[@id='id_group-privacy_and_promotion-event_format']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	for option in ele.find_elements_by_tag_name('option'):
+		if 'Class' in option.text:
+				option.click()
+				break
+	
+	#event topic
+	path = "//*[@id='id_group-privacy_and_promotion-event_category']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	for option in ele.find_elements_by_tag_name('option'):
+		if 'Health' in option.text:
+				option.click()
+				break
+	
+	#ticketing
+	path = "//*[@id='create-ticket-free-button']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.click()
+	
+	time.sleep(3)
+	
+	path = "//*[@id='id_group-tickets-0-ticket_type']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys('RSVP')
+	
+	path = "//*[@id='id_group-tickets-0-quantity_total']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys('100')
+	
+	print bcolors.HEADER + 'Completed posting to Eventbrite' + bcolors.ENDC
 
-	#assign poster/description file paths based on event ID
-	if(int(event_id) == 1):
-		#Isha Kriya
-		event_name = 'Meditation for Beginners'
-		desc_file = open("event_desc/isha_kriya.txt", "r")
-		poster_path = '/Users/harini/Documents/GitHub/isha_online_posting/posters/ishakriya.jpg'
-	elif(int(event_id) == 2):
-		#Yoga for Beginners
-		event_name = 'Yoga for Beginners'
-		desc_file = open("event_desc/yoga_for_beginners.txt", "r")
-		poster_path = '/Users/harini/Documents/GitHub/isha_online_posting/posters/yfb.jpg'
-	elif(int(event_id) == 3):
-		#Yoga for Success
-		event_name = 'Yoga for Success'
-		desc_file = open("event_desc/yoga_for_success.txt", "r")
-		poster_path = '/Users/harini/Documents/GitHub/isha_online_posting/posters/yfs.jpg'
+#Patch posting
+def patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+				ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+					ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url): 
 
-	if desc_file.mode == 'r':
-		event_desc = desc_file.read()
-	else:
-		print('Something went wrong')
-		exit()
+	browser_pat.append(webdriver.Chrome('/usr/local/bin/chromedriver'))
+	browser = browser_pat[len(browser_pat)-1]
+	month_list_patch = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-#TODO: GSheet integration
-if GSHEET == 1:
-	event_column = 'A'
-	if DEBUG == 0:
-		event_column = raw_input("Enter event column in the spreadsheet (e.g. AH): ")
+	wait = WebDriverWait(browser, 60)
+	browser.get('https://my.patch.com/user-login')
+
+	##credentials
+	path = "//*[(@id = 'edit-user-name')]"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(patch_login)
+
+	path = "//*[(@id = 'edit-password')]"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(patch_password)
+
+	path = "//*[(@id = 'edit-submit')]"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.click()
+
+	time.sleep(3)
+
+	path = "//*[@id='block-system-main']/div[3]/div[1]/a"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.click()
+
+	time.sleep(3)
+
+#import pdb; pdb.set_trace()
+
+	#image upload
+	ele = wait.until(EC.presence_of_element_located((By.ID, 'edit-field-image-asset-und-0-upload')))
+	ele.send_keys(ev_poster)
+
+	#patch sel
+	path = "//*[@id='select-patch']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.clear()
+	ele.send_keys(ev_zip)
+
+	path = "//*[@id='autocomplete-results']/div[1]"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.click()
+	ele.click()
+	
+	time.sleep(3)
+	
+	#share nearby
+	path = "//*[@id='edit-share-nearby']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.click()
+	
+	#event name
+	path = "//*[@id='edit-title']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_name)
+	
+	#date
+	path = "//*[@id='edit-field-calendar-date-und-0-value-datepicker-popup-0']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.clear()
+	patch_date = month_list_patch[int(ev_month)-1] + ' ' + ev_date + ' ' + ev_year
+	ele.send_keys(patch_date)
+	
+	#time
+	path = "//*[@id='edit-field-calendar-date-und-0-value-timepicker-popup-1']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.clear()
+	event_stime = ev_shour + ':' + ev_smin + ev_sampm
+	ele.send_keys(event_stime)
+	
+	
+	#venue
+	path = "//*[@id='edit-field-calendar-address-und-0-name-line']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_venue)
+	
+	#addr line 1
+	path = "//*[@id='edit-field-calendar-address-und-0-thoroughfare']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_addr_l1)
+	
+	#addr line 2
+	path = "//*[@id='edit-field-calendar-address-und-0-premise']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_addr_l2)
+	
+	#city
+	path = "//*[@id='edit-field-calendar-address-und-0-locality']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_city)
+	
+	#state
+	path = "//*[@id='edit-field-calendar-address-und-0-administrative-area']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	for option in ele.find_elements_by_tag_name('option'):
+		if option.text.lower() == state_name[ev_state].lower():
+				option.click()
+				break
+	
+	#zip
+	path = "//*[@id='edit-field-calendar-address-und-0-postal-code']"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_zip)
+	
+	
+	#event desc
+	path = "//*[(@id = 'redactor-uuid-0')]"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_desc)
+	
+	#event url
+	path = "//*[(@id = 'edit-field-calendar-link-und-0-url')]"
+	ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+	ele.send_keys(ev_url)
+
+	print bcolors.HEADER + 'Completed posting to Patch' + bcolors.ENDC
+
+if DEBUG == 1:
+	ev_name = 'Meditation for Beginners'
+	ev_month = '09'
+	ev_date = '23'
+	ev_year = '2018'
+	ev_shour = '5'
+	ev_smin = '45'
+	ev_sampm = 'PM'
+	ev_ehour = '6'
+	ev_emin = '45'
+	ev_eampm = 'PM'
+	ev_venue = 'Ann Arbor District Library'
+	ev_addr_l1 = '123 Ann Arbor Road'
+	ev_addr_l2 = 'Room 3003'
+	ev_city = 'Ann Arbor'
+	ev_state = 'MI'
+	ev_zip = '48105'
+	ev_desc = 'You may either Hide or you may Seek; The domain of the Divine is open to all who Seek'
+	ev_poster = '/Users/harini/Documents/GitHub/isha_online_posting/posters/ishakriya.jpg'
+	ev_url = 'http://www.ishafoundation.org/Ishakriya'
+
+	eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+				ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+					ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+
+	patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+				ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+					ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+
+elif DEBUG == 0:
 	import gspread
 	from oauth2client.service_account import ServiceAccountCredentials
 
 	scope = ['https://spreadsheets.google.com/feeds',
-         'https://www.googleapis.com/auth/drive']
+         	'https://www.googleapis.com/auth/drive']
 
 	credentials = ServiceAccountCredentials.from_json_keyfile_name('gsheet/IshaOnlinePosting-f601765b7565.json', scope)
 
 	gc = gspread.authorize(credentials)
 
-	testsheet = gc.open("Online_posting_test_sheet").sheet1
+	#NOTE: operating on the first worksheet in a workbook. Fix here if otherwise..
+	esheet = gc.open_by_url(WORKBOOKURL).get_worksheet(0)
 
-	#hardcoding row numbers for various details
-	r_evname = 1
-	r_evday = 2
-	r_evdate = 3
-	r_evtime = 4
-	r_evloc = 5
-	r_evaddr = 6
-	r_evcity = 7
-	r_evzip = 8
+	ev_idx = START_ROW
+	ev_desc = ''
+	ev_poster = ''
+	desc_file = ''
+	ev_url = ''
+
+	while 1:
+		if esheet.acell(C_EVENT_TYPE + str(ev_idx)).value: #there is an event in this row
+			if not esheet.acell(C_POSTING_STATUS + str(ev_idx)).value: #not yet posted
+				#EVENT TYPE
+				ev_type = esheet.acell(C_EVENT_TYPE + str(ev_idx)).value
+				ev_name = ''
+				if 'meditation for beginners' in ev_type.lower():
+					print bcolors.HEADER + 'Meditation for Beginners identified' + bcolors.ENDC
+					ev_name = 'Meditation for Beginners'
+					desc_file = open("event_desc/isha_kriya.txt", "r")
+					ev_poster = '/Users/harini/Documents/GitHub/isha_online_posting/posters/ishakriya.jpg'
+					ev_url = 'http://www.ishafoundation.org/Ishakriya'
+
+				elif 'yoga for beginners' in ev_type.lower():
+					print bcolors.HEADER + 'Yoga for Beginners identified' + bcolors.ENDC
+					ev_name = 'Yoga for Beginners'
+					desc_file = open("event_desc/yoga_for_beginners.txt", "r")
+					ev_poster = '/Users/harini/Documents/GitHub/isha_online_posting/posters/yfb.jpg'
+					ev_url = 'http://isha.sadhguru.org/yoga/yoga-programs/upa-yoga/'
+
+				elif 'yoga for success' in ev_type.lower():
+					print bcolors.HEADER + 'Yoga for Success identified' + bcolors.ENDC
+					ev_name = 'Yoga for Success'
+					desc_file = open("event_desc/yoga_for_success.txt", "r")
+					ev_poster = '/Users/harini/Documents/GitHub/isha_online_posting/posters/yfs.jpg'
+					ev_url = 'http://isha.sadhguru.org/yoga/yoga-programs/upa-yoga/'
+
+				else:
+					print bcolors.FAIL + 'Unsupported event name found in row ' + str(ev_idx) + bcolors.ENDC
+					ans = raw_input('What do you want to do? Answer with: \'rename\' to give a new name to the event; \'ignore\' to ignore this event and continue with the next; \'exit\' to end the script. (r/i/e): ')
 	
-	evname = testsheet.acell(event_column + str(r_evname)).value
-	evday = testsheet.acell(event_column + str(r_evday)).value
-	event_date = testsheet.acell(event_column + str(r_evdate)).value
-	evtime = testsheet.acell(event_column + str(r_evtime)).value
-	event_venue = testsheet.acell(event_column + str(r_evloc)).value
-	event_addr = testsheet.acell(event_column + str(r_evaddr)).value
-	event_city = testsheet.acell(event_column + str(r_evcity)).value
-	event_zip = testsheet.acell(event_column + str(r_evzip)).value
+					if ans.lower().startswith('r'):
+						new_name = raw_input('Input new name for event in row ' + str(ev_idx) + ': ')
+						esheet.update_acell(C_EVENT_TYPE + str(ev_idx), new_name)
+						continue
+					elif ans.lower().startswith('i'):
+						print bcolors.HEADER + 'Okay. Proceeding to the next event' + bcolors.ENDC
+						ev_idx = ev_idx + 1
+						continue
+					elif ans.lower().startswith('e'):
+						print bcolors.HEADER + 'Okay. Exiting the script. Pranams' + bcolors.ENDC
+				 		exit()
+					else:
+						print bcolors.FAIL + 'Sorry. Unrecognized answer. Exiting the script' + bcolors.ENDC
+						exit()
+		
+				#Event description
+				if desc_file.mode == 'r':
+					ev_desc = desc_file.read()
+				else:
+					print('Something went wrong')
+					exit()
 
-	#now convert the obtained input into what the rest of the script requires .. 
-	if(evname == 'MFB'):
-		#Isha Kriya
-		event_name = 'Meditation for Beginners - Isha Foundation'
-		desc_file = open("event_desc/isha_kriya.txt", "r")
-		poster_path = '/Users/harini/Documents/GitHub/isha_online_posting/posters/ishakriya.jpg'
-	elif(evname == YFB):
-		#Yoga for Beginners
-		event_name = 'Yoga for Beginners - Isha Foundation'
-		desc_file = open("event_desc/yoga_for_beginners.txt", "r")
-		poster_path = '/Users/harini/Documents/GitHub/isha_online_posting/posters/yfb.jpg'
-	elif(evname == YFS):
-		#Yoga for Success
-		event_name = 'Yoga for Success - Isha Foundation'
-		desc_file = open("event_desc/yoga_for_success.txt", "r")
-		poster_path = '/Users/harini/Documents/GitHub/isha_online_posting/posters/yfs.jpg'
-
-	if desc_file.mode == 'r':
-		event_desc = desc_file.read()
-	else:
-		print('Something went wrong')
-		exit()
-
-	#split evtime into start time and end time
-	split_time = re.split(r"[to-]", evtime)
-	event_stime = split_time[0]
-	event_etime = split_time[len(split_time)-1]
-
-print bcolors.OKBLUE + "Remind yourself of the tools of Inner Engineering while the script prefills the fields .." + bcolors.ENDC
-####################################### ACTUAL START OF THE SCRIPT! ################
+				#DATE
+				ev_date = esheet.acell(C_DATE + str(ev_idx)).value	
+				date_split = re.split(r"[\/]", ev_date)
+				ev_month = date_split[0]
+				ev_date = date_split[1]
+				ev_year = date_split[2]
+				if(len(date_split[2]) == 2):
+					ev_year = '20' + date_split[2]
 	
-browser = webdriver.Chrome('/usr/local/bin/chromedriver')
-wait = WebDriverWait(browser, 60)
+				#START TIME
+				ev_stime = esheet.acell(C_START_TIME + str(ev_idx)).value
+				ev_stime = ''.join(ev_stime.split()) #remove all whitespace characters
+				ev_stime = ev_stime.lower()
+				ev_stime = ev_stime.replace('a.m', 'am')
+				ev_stime = ev_stime.replace('p.m', 'pm')
+				ev_sampm = ''
+				if 'am' in ev_stime:
+					ev_sampm = 'AM'
+					ev_stime = ev_stime.replace('am', '')
+				elif 'pm' in ev_stime:
+					ev_sampm = 'PM'
+					ev_stime = ev_stime.replace('pm', '')
+				else:
+					print 'Error. No AM/PM in start time'
+					exit()
+	
+				stime_split = re.split(r"[;.:]", ev_stime)
+				ev_shour = stime_split[0]
+				ev_smin = stime_split[1]
+					
+	
+				#END TIME
+				ev_etime = esheet.acell(C_END_TIME + str(ev_idx)).value
+				ev_etime = ''.join(ev_etime.split()) #remove all whitespace characters
+				ev_etime = ev_etime.lower()
+				ev_etime = ev_etime.replace('a.m', 'am')
+				ev_etime = ev_etime.replace('p.m', 'pm')
+				ev_eampm = ''
+				if 'am' in ev_etime:
+					ev_eampm = 'AM'
+					ev_etime = ev_etime.replace('am', '')
+				elif 'pm' in ev_etime:
+					ev_eampm = 'PM'
+					ev_etime = ev_etime.replace('pm', '')
+				else:
+					print 'Error. No AM/PM in end time'
+					exit()
+	
+				etime_split = re.split(r"[;.:]", ev_etime)
+				ev_ehour = etime_split[0]
+				ev_emin = etime_split[1]
+	
+				#VENUE
+				ev_venue = esheet.acell(C_VENUE + str(ev_idx)).value
+	
+				#ADDRESS LINE1
+				ev_addr_l1 = esheet.acell(C_ADDR_LINE1 + str(ev_idx)).value
+	
+				#ADDRESS LINE2
+				ev_addr_l2 = esheet.acell(C_ADDR_LINE2 + str(ev_idx)).value
+	
+				#CITY
+				ev_city = esheet.acell(C_CITY + str(ev_idx)).value
+	
+				#STATE
+				ev_state = esheet.acell(C_STATE + str(ev_idx)).value
+	
+				#ZIP
+				ev_zip = esheet.acell(C_ZIP + str(ev_idx)).value
+	
+				print 'Event name: ' + ev_name
+				print 'Event month: ' + ev_month
+				print 'Event date: ' + ev_date
+				print 'Event year: ' + ev_year
+				print 'Event start hour: ' + ev_shour
+				print 'Event start min: ' + ev_smin
+				print 'Event start AM/PM: ' + ev_sampm
+				print 'Event end hour: ' + ev_ehour
+				print 'Event end min: ' + ev_emin
+				print 'Event end AM/PM: ' + ev_eampm
+				print 'Event venue: ' + ev_venue
+				print 'Event Addr Line1: ' + ev_addr_l1
+				print 'Event Addr Line2: ' + ev_addr_l2
+				print 'Event city: ' + ev_city
+				print 'Event state: ' + ev_state
+				print 'Event zip: ' + ev_zip
+	
+				eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+						ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+						ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
 
-################# EVENTBRITE ###########################
+				patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+						ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+						ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
 
-#testing here so that we can exit before all the fancy input stuff!
-browser.get('https://www.eventbrite.com/create')
-
-#login and password
-
-curpath =  "//*[@id='signin-email']"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
-ele.send_keys(eb_login)
-
-curpath =  "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/form/div[2]/button"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
-ele.click()
-
-curpath =  "//*[@id='password']"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
-ele.send_keys(eb_password)
-
-curpath = "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/div[2]/form/div[3]/button" 
-ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
-ele.click()
-
-#actual event
-
-path = "//*[@id='id_group-details-name']"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele.send_keys(event_name)
-
-#location
-
-#enter address click
-path = "//*[@id='create_location_content']/div/div/ul/li[3]/a"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele.click()
-ele.click()
-
-#venue name
-path = "//*[@id='location_edit_form']/div[1]/input[1]"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele.send_keys(event_venue)
-
-#address line 1
-path = "//*[@id='location_edit_form']/div[1]/input[2]"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele.send_keys(event_addr)
-
-#skipping line 2 of the address for now...
-##address line 2
-#path = "//*[@id='location_edit_form']/div[1]/input[3]"
-#ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-#ele.send_keys('Address Line 2')
-
-#city
-path = "//*[@id='location_edit_form']/div[1]/input[4]"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele.send_keys(event_city)
-
-#state -- hardcoding for now ..
-path = "//*[@id='location_edit_form']/div[2]/div[1]/input"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele.send_keys('Michigan')
-
-#zip
-path = "//*[@id='location_edit_form']/div[2]/div[2]/input"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele.send_keys(event_zip)
-
-#country -- hardcoding for now ..
-path = "//*[@id='location_edit_form']/div[2]/div[3]/div/select"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-for option in ele.find_elements_by_tag_name('option'):
-	if option.text == 'United States':
-			option.click()
+				esheet.update_acell(C_POSTING_STATUS + str(ev_idx), 'POSTED')
+	
+			ev_idx = ev_idx + 1
+		else:
 			break
 
-
-#start date -- clear and type in the date
-event_date = ''.join(event_date.split()) #remove all whitespace characters
-split_date = re.split('(\d+)', event_date)
-event_month = split_date[0].lower()
-event_date = split_date[1]
-
-path = "//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'hasDatepicker', ' ' ))]" 
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele = browser.find_elements_by_xpath(path)
-ele[0].click()
-ele[0].clear()
-mon_idx = 0
-for mon in month_list:
-	mon_idx = mon_idx + 1
-	if mon in event_month:
-		break
-in_date = str(mon_idx) + '/' + str(event_date) + '/' + str(event_year)
-ele[0].send_keys(in_date)
-
-#end date
-ele[1].click()
-ele[1].clear()
-ele[1].send_keys(in_date)
-
-#Fix the start time
-event_stime = ''.join(event_stime.split()) #remove all whitespace characters
-event_stime = event_stime.lower()
-event_stime = event_stime.replace('a.m', 'am') #remove dot from a.m, p.m.
-event_stime = event_stime.replace('p.m', 'pm') #remove dot from a.m, p.m.
-event_stime = event_stime.replace('.', ':') #remove dot from a.m, p.m.
-event_stime = event_stime.replace(';', ':') #remove dot from a.m, p.m.
-split_stime = ''
-event_am_pm = ''
-if "am" in event_stime:
-	event_am_pm = "am"
-	split_stime = re.split("[:a]", event_stime)
-elif "pm" in event_stime:
-	event_am_pm = "pm"
-	split_stime = re.split("[:p]", event_stime)
-else:
-	print bcolors.FAIL + "Event start time does not have AM or PM. Exiting" + bcolors.ENDC
-	exit()
-new_stime = split_stime[0] + ':' + split_stime[1] + event_am_pm
-
-#start time --clear and type in the time
-path = "//*[@id='event_details_date']/div/div[1]/div[1]/div[1]/div/div[2]/input"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele.clear()
-ele.send_keys(new_stime)
-
-#Fix the end time
-event_etime = ''.join(event_etime.split()) #remove all whitespace characters
-event_etime = event_etime.lower()
-event_etime = event_etime.replace('a.m', 'am') #remove dot from a.m, p.m.
-event_etime = event_etime.replace('p.m', 'pm') #remove dot from a.m, p.m.
-event_etime = event_etime.replace('.', ':') #remove dot from a.m, p.m.
-event_etime = event_etime.replace(';', ':') #remove dot from a.m, p.m.
-split_etime = ''
-event_am_pm = ''
-if "am" in event_stime:
-	event_am_pm = "am"
-	split_etime = re.split("[:a]", event_etime)
-elif "pm" in event_stime:
-	event_am_pm = "pm"
-	split_etime = re.split("[:p]", event_etime)
-else:
-	print bcolors.FAIL + "Event end time does not have AM or PM. Exiting" + bcolors.ENDC
-	exit()
-new_etime = split_etime[0] + ':' + split_etime[1] + event_am_pm
-
-#end time
-path = "//*[@id='event_details_date']/div/div[1]/div[1]/div[2]/div/div[2]/input"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele.clear()
-ele.send_keys(new_etime)
-time.sleep(2)
-
-for i in range(1, 6):
-	actions = ActionChains(browser)
-	actions.send_keys(Keys.TAB)
-	actions.perform()
-	time.sleep(1)
-
-actions.send_keys(Keys.TAB)
-actions.perform()
-time.sleep(1)
-actions = ActionChains(browser)
-actions.send_keys(event_desc)
-actions.perform()
-time.sleep(3)
-
-#event image
-path = "//*[@id='uploader-file-input-id']"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele.send_keys(poster_path)
-text = 'DONE'
-ele = wait.until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, text)))
-ele.click()
-time.sleep(6)
-
-
-path = "//*[@id='id_group-organizer-organizer']"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-for option in ele.find_elements_by_tag_name('option'):
-	if 'Isha Foundation' in option.text:
-			option.click()
-			break
-
-time.sleep(3)
-
-#event type
-path = "//*[@id='id_group-privacy_and_promotion-event_format']"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-for option in ele.find_elements_by_tag_name('option'):
-	if 'Class' in option.text:
-			option.click()
-			break
-
-#event topic
-path = "//*[@id='id_group-privacy_and_promotion-event_category']"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-for option in ele.find_elements_by_tag_name('option'):
-	if 'Health' in option.text:
-			option.click()
-			break
-
-#ticketing
-path = "//*[@id='create-ticket-free-button']"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele.click()
-
-time.sleep(3)
-
-path = "//*[@id='id_group-tickets-0-ticket_type']"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele.send_keys('RSVP')
-
-path = "//*[@id='id_group-tickets-0-quantity_total']"
-ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-ele.send_keys('100')
-
-print bcolors.HEADER + 'Completed posting to Eventbrite' + bcolors.ENDC
+print 'Job complete. Exiting ..'
 
