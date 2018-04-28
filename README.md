@@ -29,3 +29,4 @@ The script can now pick the event details directly from the google sheet! Contac
 
 Currently works for:
 1. Eventbrite
+2. Patch
