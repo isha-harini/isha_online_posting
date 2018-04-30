@@ -10,8 +10,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 import re
 import time
 import smtplib
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEText import MIMEText
 from datetime import datetime
 
-print "Test successful"
+print("Test successful")

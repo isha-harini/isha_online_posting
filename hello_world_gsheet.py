@@ -10,8 +10,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 import re
 import time
 import smtplib
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEText import MIMEText
 from datetime import datetime
 
 import gspread
@@ -20,10 +18,10 @@ from oauth2client.service_account import ServiceAccountCredentials
 scope = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
 
-credentials = ServiceAccountCredentials.from_json_keyfile_name('gsheet/IshaOnlinePosting-f601765b7565.json', scope)
+credentials = ServiceAccountCredentials.from_json_keyfile_name('IshaOnlinePosting.json', scope)
 
 gc = gspread.authorize(credentials)
 
 testsheet = gc.open("Online_posting_test_sheet").sheet1
 
-print "Test successful"
+print("Test successful")
