@@ -21,6 +21,9 @@ C_ADDR_LINE2 = 'K'
 C_CITY = 'L'
 C_STATE = 'M'
 C_ZIP = 'N'
+C_CENTERID = 'O'
+C_HOST = 'P'
+C_PRESENTER = 'Q'
 START_ROW = 2
 
 #login details
@@ -36,6 +39,10 @@ patch_password = 'Dhyanalinga247'
 meetup_login = 'isha.harini.umich@gmail.com'
 meetup_password = 'Dhyanalinga247'
 
+#Isha site
+isha_login = 'hmuthukrishnan'
+isha_password = 'Dhyanalinga247'
+
 #State name - code dictionary
 state_name = {
  'MI' : 'Michigan'
@@ -49,6 +56,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common import action_chains, keys
 from selenium.webdriver.common.action_chains import ActionChains
+from geopy.geocoders import Nominatim
 
 import re
 import time
@@ -70,6 +78,8 @@ class bcolors:
 
 browser_eb = []
 browser_pat = []
+browser_meetup = []
+browser_isha = []
 
 
 #Eventbrite posting
@@ -381,8 +391,8 @@ def meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
               ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
                   ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url): 
 
-       browser_pat.append(webdriver.Chrome('/usr/local/bin/chromedriver'))
-       browser = browser_pat[len(browser_pat)-1]
+       browser_meetup.append(webdriver.Chrome('/usr/local/bin/chromedriver'))
+       browser = browser_meetup[len(browser_meetup)-1]
        month_list_meetup = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
        
        wait = WebDriverWait(browser, 60)
@@ -548,6 +558,181 @@ def meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        
        print(bcolors.HEADER + 'Completed posting to Meetup' + bcolors.ENDC)
 
+#Isha site posting
+def ishasite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+              ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+                  ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url, centerId, ev_host, ev_presenter):
+       
+       browser_isha.append(webdriver.Chrome('/usr/local/bin/chromedriver'))
+       browser = browser_isha[len(browser_isha)-1]
+       
+       wait = WebDriverWait(browser, 60)
+       browser.get('https://innerengineering.com/ieo/newadmin/login.php')
+
+       #credentials
+       path = "//*[@id='login']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(isha_login)
+ 
+       path = "//*[@id='password']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(isha_password)
+      
+       path = "/html/body/div/form/div/div[3]/button"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.click()
+
+       time.sleep(3) 
+       browser.get('https://innerengineering.com/ieo/newadmin/freeEvents.php?act=Add')
+
+       time.sleep(3) 
+       #event type
+       path = "//*[@id='event_type_id']"                 
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       for option in ele.find_elements_by_tag_name('option'):
+             if option.text.lower() == ev_name.lower():
+                option.click()
+                break
+
+       #event desc
+       path = "//*[@id='event_desc']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_desc)
+
+       #address line 1
+       path = "//*[@id='address_line1']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_addr_l1)
+
+       #address line 2
+       path = "//*[@id='address_line2']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_addr_l2)
+
+       #city
+       path = "//*[@id='city']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_city)
+
+       #state
+       path = "//*[@id='usState']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       for option in ele.find_elements_by_tag_name('option'):
+            if option.text.lower() == state_name[ev_state].lower():
+                option.click()
+                break
+
+       #zip code
+       path = "//*[@id='zipcode']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_zip)
+
+       geolocator = Nominatim()
+       addr = ev_addr_l1 + ', ' + ev_city + ', ' + ev_state
+       location = geolocator.geocode(addr)
+
+       #latitude
+       path = "//*[@id='lat']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(str(location.latitude))
+
+       #longitude
+       path = "//*[@id='lng']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(str(location.longitude))
+
+       actions = ActionChains(browser) 
+       actions.send_keys(Keys.TAB)
+       actions.perform()
+
+       #event date
+       path = "//*[@id='event_st_dt']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       date = ev_year + '-' + ev_month + '-' + ev_date
+       ele.clear()
+       ele.send_keys(date)
+
+       #start time
+       path = "//*[@id='event_start_time']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       stime = ev_shour + ':' + ev_smin + ' ' + ev_sampm.upper()
+       ele.send_keys(stime)
+
+       #end time
+       path = "//*[@id='event_end_time']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       etime = ev_ehour + ':' + ev_emin + ' ' + ev_eampm.upper()
+       ele.send_keys(etime)
+
+       #event category
+       path = "//*[@id='event_cat_id']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       for option in ele.find_elements_by_tag_name('option'):
+            if option.text == 'Other':
+                option.click()
+                break
+
+       #center ID
+       path = "//*[@id='centerId']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       for option in ele.find_elements_by_tag_name('option'):
+            if option.text.lower() == centerId.lower():
+                option.click()
+                break
+
+       #public event
+       path = "//*[@id='event_type']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.click()
+
+       #host
+       path = "//*[@id='host']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_host)
+
+       actions = ActionChains(browser) 
+       actions.send_keys(Keys.TAB)
+       actions.perform()
+
+       #presenter
+       path = "//*[@id='presenter']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_presenter)
+
+       #status
+       path = "//*[@id='evtStatus']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       for option in ele.find_elements_by_tag_name('option'):
+            if option.text.lower() == 'active':
+                option.click()
+                break
+
+       #Program details
+       #type
+       path = "//*[@id='evt_pgmId1']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       for option in ele.find_elements_by_tag_name('option'):
+            if option.text.lower() == ev_name.lower():
+                option.click()
+                break
+
+       #start time
+       path = "//*[@id='evt_start_time1']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(stime)
+
+       #end time
+       path = "//*[@id='evt_end_time1']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(etime)
+
+       #RSVP
+       path = "//*[@id='main-content']/div[1]/div[2]/div/div/div[4]/div[4]/div/input"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.click()
+
+       print("Completed posting to Isha portal")
+
 if DEBUG == 1:
        ev_name = 'Meditation for Beginners'
        ev_month = '09'
@@ -568,6 +753,9 @@ if DEBUG == 1:
        ev_desc = 'You may either Hide or you may Seek; The domain of the Divine is open to all who Seek'
        ev_poster = '/Users/harini/Documents/GitHub/isha_online_posting/posters/ishakriya.jpg'
        ev_url = 'http://www.ishafoundation.org/Ishakriya'
+       ev_centerId = 'Detroit MI'
+       ev_host = 'Creation'
+       ev_presenter = 'Creator'
        
        #eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
         #   ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
@@ -577,9 +765,14 @@ if DEBUG == 1:
         #   ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
          #      ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
 
-       meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+       #meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+        #   ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+         #      ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+
+       ishasite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
            ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
-               ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+               ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url, ev_centerId, ev_host, ev_presenter)
+
 
 elif DEBUG == 0:
       import gspread
@@ -724,6 +917,15 @@ elif DEBUG == 0:
                  #ZIP
                  ev_zip = esheet.acell(C_ZIP + str(ev_idx)).value
                  
+                 #CenterID
+                 ev_centerid = esheet.acell(C_CENTERID + str(ev_idx)).value
+
+                 #Host
+                 ev_host = esheet.acell(C_HOST + str(ev_idx)).value
+
+                 #Presenter
+                 ev_presenter = esheet.acell(C_PRESENTER + str(ev_idx)).value
+
                  print('Event name: ' + ev_name)
                  print('Event month: ' + ev_month)
                  print('Event date: ' + ev_date)
@@ -740,6 +942,9 @@ elif DEBUG == 0:
                  print('Event city: ' + ev_city)
                  print('Event state: ' + ev_state)
                  print('Event zip: ' + ev_zip)
+                 print('Event centerid: ' + ev_centerid)
+                 print('Event host: ' + ev_host)
+                 print('Event presenter: ' + ev_presenter)
                  
                  eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
                                ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
@@ -752,6 +957,10 @@ elif DEBUG == 0:
                  meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
                               ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
                                   ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+
+                 ishasite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+                              ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+                                  ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url, ev_centerid, ev_host, ev_presenter)
 
                  print('Please verify and complete the event posting')
 
