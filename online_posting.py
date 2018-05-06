@@ -32,6 +32,10 @@ eb_password = 'j0y247LetUsMakeitHappen!'
 patch_login = 'isha.harini.umich@gmail.com'
 patch_password = 'Dhyanalinga247'
 
+#Meetup
+meetup_login = 'isha.harini.umich@gmail.com'
+meetup_password = 'Dhyanalinga247'
+
 #State name - code dictionary
 state_name = {
  'MI' : 'Michigan'
@@ -372,6 +376,178 @@ def patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        
        print(bcolors.HEADER + 'Completed posting to Patch' + bcolors.ENDC)
 
+#Meetup posting
+def meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+              ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+                  ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url): 
+
+       browser_pat.append(webdriver.Chrome('/usr/local/bin/chromedriver'))
+       browser = browser_pat[len(browser_pat)-1]
+       month_list_meetup = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+       
+       wait = WebDriverWait(browser, 60)
+       browser.get('https://secure.meetup.com/login/')
+       
+       ##credentials
+       path = "//*[@id='email']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(meetup_login)
+       
+       path = "//*[@id='password']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(patch_password)
+       
+       path = "//*[@id='loginForm']/div/div[3]/input"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.click()
+       
+       time.sleep(3)
+       
+       browser.get('https://www.meetup.com/Isha-Yoga-Detroit-Free-Meditation-Classes/schedule/#changeVenue')
+
+       time.sleep(3)
+
+       
+       #event name
+       path = "//*[@id='additionalPanels_name']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_name)
+
+       #date
+       actions = ActionChains(browser)
+       actions.send_keys(Keys.TAB)
+       actions.perform()
+
+       #identify current month
+       name = "cur-month"
+       ele = wait.until(EC.presence_of_element_located((By.CLASS_NAME, name)))
+       cur_month = ele.text
+
+       #find the month number
+       idx = 0
+       while idx < 12:
+            idx = idx + 1
+            if month_list_meetup[idx - 1].lower() in cur_month.lower():
+                  break
+       if idx > 11:
+            print('Something went wrong')
+            exit()
+
+       #number of clicks to reach correct month
+       if idx > int(ev_month): #month is in the next year
+          num_clicks = int(ev_month) + 12 - idx
+       else:
+          num_clicks = int(ev_month) - idx
+
+       time.sleep(3)
+
+       while num_clicks > 0:
+          path = "/html/body/div[2]/div[1]/span[2]"
+          ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+          ele.click()
+          num_clicks = num_clicks - 1
+          time.sleep(3)
+
+       #date
+       idx = 1
+       while 1:
+            path = '/html/body/div[2]/div[2]/div/div[2]/div/span[' + str(idx) + ']'                        
+            ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+            if ele.text == '1':
+                break
+            idx = idx + 1
+
+       date_idx = idx + int(ev_date) - 1
+       path = '/html/body/div[2]/div[2]/div/div[2]/div/span[' + str(date_idx) + ']'                        
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.click()
+
+       #start time
+       path = "//*[@id='startDatetime--time']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       input_data = ev_shour + ':' + ev_smin
+       ele.send_keys(input_data)
+       ele.send_keys(ev_sampm)
+
+       #end time
+       path = "//*[@id='endDatetime--time']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       input_data = ev_ehour + ':' + ev_emin
+       ele.send_keys(input_data)
+       ele.send_keys(ev_eampm)
+
+       #add location
+       path = "//*[@id='venuePicker-searchResultList']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_venue)
+
+       actions = ActionChains(browser)
+       actions.send_keys(Keys.ESCAPE)
+       actions.perform()
+
+       path = "//*[@id='eventScheduleForm']/section[3]/div/div/section/div/div[2]/div[1]/ul/li/a/span"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.click()
+
+       #venue name
+       path = "//*[@id='addVenue_name']"       
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_venue)
+
+       #addr line1
+       path = "//*[@id='addVenue_address_1']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_addr_l1)
+
+       #addr line2
+       path = "//*[@id='addVenue_address_2']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_addr_l2)
+
+       #city
+       path = "//*[@id='addVenue_city']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_city)
+
+       #zip
+       path = "//*[@id='addVenue_zip']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_zip)
+
+       #state
+       path = "//*[@id='addVenue_state']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       for option in ele.find_elements_by_tag_name('option'):
+            if option.text.lower() == state_name[ev_state].lower():
+                option.click()
+                break
+
+       #submit
+       path = "//*[@id='eventScheduleForm']/section[3]/div/div/section/div/div[2]/div[8]/div[1]/div/div[2]/button"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.click()
+
+       #image upload
+       path = "//*[@id='eventScheduleForm']/section[4]/div/div/section/div/div[2]/div/input"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_poster)
+
+       #desc
+       path = "//*[@id='description']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(ev_desc)
+
+       #attendee limit
+       path = "//*[@id='additionalPanels_rsvp_limit']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys('108')
+
+       path = "//*[@id='eventScheduleForm']/section[5]/div/div/section/div/div[6]/label/div/div[1]/span"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.click()
+       
+       print(bcolors.HEADER + 'Completed posting to Meetup' + bcolors.ENDC)
+
 if DEBUG == 1:
        ev_name = 'Meditation for Beginners'
        ev_month = '09'
@@ -384,7 +560,7 @@ if DEBUG == 1:
        ev_emin = '45'
        ev_eampm = 'PM'
        ev_venue = 'Ann Arbor District Library'
-       ev_addr_l1 = '123 Ann Arbor Road'
+       ev_addr_l1 = '1929 Plymouth Road'
        ev_addr_l2 = 'Room 3003'
        ev_city = 'Ann Arbor'
        ev_state = 'MI'
@@ -393,11 +569,15 @@ if DEBUG == 1:
        ev_poster = '/Users/harini/Documents/GitHub/isha_online_posting/posters/ishakriya.jpg'
        ev_url = 'http://www.ishafoundation.org/Ishakriya'
        
-       eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
-           ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
-               ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+       #eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+        #   ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+         #      ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
        
-       patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+       #patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+        #   ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+         #      ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+
+       meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
            ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
                ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
 
