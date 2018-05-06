@@ -749,7 +749,12 @@ elif DEBUG == 0:
                               ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
                                   ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
                  
+                 meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+                              ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+                                  ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+
                  print('Please verify and complete the event posting')
+
                  compl = input('Answer with:\nComplete: to mark posting complete and move on to the next event\n ignore: to ignore this event and move on to the next event\n repost: to repost the current event;\n exit: to quit (c/i/r/e): ')
                  if compl.lower().startswith('c'):
                        print("Okay. Moving to the next event if any")
