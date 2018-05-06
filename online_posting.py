@@ -65,6 +65,22 @@ import smtplib
 #from email.MIMEText import MIMEText
 from datetime import datetime
 
+#sort out chromedriver
+chromedriver_path = ''
+import os
+import sys
+if os.name == 'nt':
+      chromedriver_path = 'win/chromedriver.exe'
+elif os.name == 'posix':
+      if not ('linux' in sys.platform.lower()):
+            chromedriver_path = 'mac/chromedriver'
+      else:
+            print('Unrecognized platform')
+            exit()
+else:
+      print('Unrecognized platform')
+      exit()
+
 #prettifies the cmd line
 class bcolors:
        HEADER = '\033[95m'
@@ -87,7 +103,7 @@ def eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
                    ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
                          ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url): 
 
-       browser_eb.append(webdriver.Chrome('/usr/local/bin/chromedriver'))
+       browser_eb.append(webdriver.Chrome(chromedriver_path))
        browser = browser_eb[len(browser_eb)-1]
        wait = WebDriverWait(browser, 60)
        browser.get('https://www.eventbrite.com/create')
@@ -268,7 +284,7 @@ def patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
               ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
                   ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url): 
 
-       browser_pat.append(webdriver.Chrome('/usr/local/bin/chromedriver'))
+       browser_pat.append(webdriver.Chrome(chromedriver_path))
        browser = browser_pat[len(browser_pat)-1]
        month_list_patch = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
        
@@ -391,7 +407,7 @@ def meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
               ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
                   ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url): 
 
-       browser_meetup.append(webdriver.Chrome('/usr/local/bin/chromedriver'))
+       browser_meetup.append(webdriver.Chrome(chromedriver_path))
        browser = browser_meetup[len(browser_meetup)-1]
        month_list_meetup = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
        
@@ -563,7 +579,7 @@ def ishasite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
               ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
                   ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url, centerId, ev_host, ev_presenter):
        
-       browser_isha.append(webdriver.Chrome('/usr/local/bin/chromedriver'))
+       browser_isha.append(webdriver.Chrome(chromedriver_path))
        browser = browser_isha[len(browser_isha)-1]
        
        wait = WebDriverWait(browser, 60)
