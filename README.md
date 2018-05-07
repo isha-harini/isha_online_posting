@@ -1,32 +1,32 @@
 # isha_online_posting
 Script for posting to the websites.
 
-You will need to install the following onto your computer before running the script:
-  1. Python - Install the python package .. not the snake. The scripting language ;-)
-  2. Selenium - this is the package that helps us interact with the websites
-  3. Chromedriver - this package helps selenium to interact with chrome. You could install firefox/any other browser driver instead - in which case you have to modify the script. So, unless you have a strong reason not to use Chrome, just stick with it.
-  
-  These are the packages we needed to run on a Mac. Running on Windows may have different requirements..
-  We run it on the Terminal for Mac. You might have to run it on Command Prompt or download a csh shell to run on Windows. We can make this a Windows executable -- that is future work.
-  
-  The script comes in 2 flavors: (1) User enters event details on the command line (2) User just mentions the column number in to the script and the script reads directly from the Online Promotions Google Sheet. (this will require additional packages and permissions TODO: Update them on this page)
-  
-  To test if all required packages are installed for (1)
-  
-      python hello_world.py
-      
-  To test if all packages & permission files are installed for (2)
-  
-      python hello_world_gsheet.py
-      
-  To run the script just type 
-  
-      python online_posting.py
+1. Download and install python3 (script was tested for Python3.6)
 
+2. Copy the permissions file (IshaOnlinePosting.json) to this directory.
 
-Update:
-The script can now pick the event details directly from the google sheet! Contact author for more info.
+3. Change line 10 of online_posting.py to reflect the URL of your events sheet. 
+
+4. Share the events sheet with the client email mentioned in IshaOnlinePosting.json
+
+5. Run the following commad to install required packages
+
+            python installer.py
+    
+6. Test if the installations went well
+
+            python hello_world.py
+            python hello_world_gsheet.py
+            
+7. Finally, run the script
+
+            python online_posting.py
+            
+You need not repeat (1) to (6) everytime you need to post an event. It is needed only once to setup your computer if you are using the same events sheet
+
 
 Currently works for:
 1. Eventbrite
 2. Patch
+3. Meetup
+4. Isha Portal
