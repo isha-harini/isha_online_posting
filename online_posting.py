@@ -610,7 +610,7 @@ def ishasite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        path = "//*[@id='event_type_id']"                 
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        for option in ele.find_elements_by_tag_name('option'):
-             if option.text.lower() == ev_name.lower():
+             if option.text.lower() in ev_name.lower():
                 option.click()
                 break
 
@@ -732,7 +732,7 @@ def ishasite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        path = "//*[@id='evt_pgmId1']"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        for option in ele.find_elements_by_tag_name('option'):
-            if option.text.lower() == ev_name.lower():
+            if option.text.lower() in ev_name.lower():
                 option.click()
                 break
 
@@ -751,7 +751,8 @@ def ishasite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        ele.click()
 
-       print("Completed posting to Isha portal")
+       print(bcolors.HEADER + 'Completed posting to Isha portal' + bcolors.ENDC)
+       
 
 if DEBUG == 1:
        ev_name = 'Meditation for Beginners'
@@ -823,20 +824,23 @@ elif DEBUG == 0:
                  if 'meditation for beginners' in ev_type.lower():
                        print(bcolors.HEADER + 'Meditation for Beginners identified' + bcolors.ENDC)
                        ev_name = 'Meditation for Beginners'
+                       ev_name = 'Meditation for Beginners (Isha Kriya) - Free Class'
                        desc_file = open("event_desc/isha_kriya.txt", "r")
                        ev_poster = '/Users/harini/Documents/GitHub/isha_online_posting/posters/ishakriya.jpg'
                        ev_url = 'http://www.ishafoundation.org/Ishakriya'
                  
                  elif 'yoga for beginners' in ev_type.lower():
                        print(bcolors.HEADER + 'Yoga for Beginners identified' + bcolors.ENDC)
-                       ev_name = 'Yoga for Beginners'
+                       #ev_name = 'Yoga for Beginners'
+                       ev_name = 'Yoga for Beginners - Free Class (Upa Yoga)'
                        desc_file = open("event_desc/yoga_for_beginners.txt", "r")
                        ev_poster = '/Users/harini/Documents/GitHub/isha_online_posting/posters/yfb.jpg'
                        ev_url = 'http://isha.sadhguru.org/yoga/yoga-programs/upa-yoga/'
                  
                  elif 'yoga for success' in ev_type.lower():
                        print(bcolors.HEADER + 'Yoga for Success identified' + bcolors.ENDC)
-                       ev_name = 'Yoga for Success'
+                       #ev_name = 'Yoga for Success'
+                       ev_name = 'Yoga For Success - Free and Open to All'
                        desc_file = open("event_desc/yoga_for_success.txt", "r")
                        ev_poster = '/Users/harini/Documents/GitHub/isha_online_posting/posters/yfs.jpg'
                        ev_url = 'http://isha.sadhguru.org/yoga/yoga-programs/upa-yoga/'
