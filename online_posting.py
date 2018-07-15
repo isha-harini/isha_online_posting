@@ -57,6 +57,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common import action_chains, keys
 from selenium.webdriver.common.action_chains import ActionChains
 from geopy.geocoders import Nominatim
+from datetime import datetime
 
 import re
 import time
@@ -174,12 +175,12 @@ def eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        ele.send_keys(ev_zip)
        
        #country -- hardcoding for now ..
-       path = "//*[@id='location_edit_form']/div[2]/div[3]/div/select"
-       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-       for option in ele.find_elements_by_tag_name('option'):
-           if option.text == 'United States':
-               option.click()
-               break
+       #path = "//*[@id='location_edit_form']/div[2]/div[3]/div/select"
+       #ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       #for option in ele.find_elements_by_tag_name('option'):
+       #    if option.text == 'United States':
+       #        option.click()
+       #        break
        
        
        #start date -- clear and type in the date
@@ -310,11 +311,14 @@ def patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        
        time.sleep(3)
        
-       path = "//*[@id='block-system-main']/div[3]/div[1]/a"
-       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-       ele.click()
+       browser.get('https://my.patch.com/node/add/calendar-item')
+       #path = "//*[@id='block-system-main']/div[3]/div[1]/a"
+       #path = "//*[@id='block-system-main']/section[2]/section[1]/a/span[2]"
+       #ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       #ele.click()
        
        time.sleep(3)
+
        
        #import pdb; pdb.set_trace()
        
@@ -336,9 +340,9 @@ def patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        time.sleep(3)
        
        #share nearby
-       path = "//*[@id='edit-share-nearby']"
-       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-       ele.click()
+       #path = "//*[@id='edit-share-nearby']"
+       #ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       #ele.click()
        
        #event name
        path = "//*[@id='edit-title']"
@@ -444,7 +448,7 @@ def meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        ele.send_keys(ev_name)
 
-       #date
+       ##date
        actions = ActionChains(browser)
        actions.send_keys(Keys.TAB)
        actions.perform()
@@ -452,17 +456,20 @@ def meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        #identify current month
        name = "cur-month"
        ele = wait.until(EC.presence_of_element_located((By.CLASS_NAME, name)))
-       cur_month = ele.text
+       #cur_month = ele.text
 
        #find the month number
-       idx = 0
-       while idx < 12:
-            idx = idx + 1
-            if month_list_meetup[idx - 1].lower() in cur_month.lower():
-                  break
+       #idx = 0
+       #while idx < 12:
+       #     idx = idx + 1
+       #     print('Cur Month: ' + cur_month.lower() + 'List month: ' + month_list_meetup[idx - 1])
+       #     if month_list_meetup[idx - 1].lower() in cur_month.lower():
+       #           break
+       idx = datetime.now().month - 1
        if idx > 11:
             print('Something went wrong')
             exit()
+       
 
        #number of clicks to reach correct month
        if idx > int(ev_month): #month is in the next year
@@ -559,9 +566,17 @@ def meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        ele.click()
 
        #image upload
-       path = "//*[@id='eventScheduleForm']/section[4]/div/div/section/div/div[2]/div/input"
+       #path = "//*[@id='eventScheduleForm']/section[4]/div/div/section/div/div[2]/div/input"
+       path = "//*[@id='uploadButton-submit']/div/input"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        ele.send_keys(ev_poster)
+
+       time.sleep(3) 
+       #finish
+       path = "//*[@id='uploadButton-submit']/div[1]/div/div[2]/div[2]/div[3]/button/span"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.click()
+       time.sleep(3) 
 
        #desc
        path = "//*[@id='description']"
@@ -836,7 +851,7 @@ elif DEBUG == 0:
                        #ev_name = 'Yoga for Beginners'
                        ev_name = 'Yoga for Beginners - Free Class (Upa Yoga)'
                        desc_file = open("event_desc/yoga_for_beginners.txt", "r")
-                       ev_poster = cwd + 'posters/yfb.jpg'
+                       ev_poster = cwd + '/posters/yfb.jpg'
                        ev_url = 'http://isha.sadhguru.org/yoga/yoga-programs/upa-yoga/'
                  
                  elif 'yoga for success' in ev_type.lower():
@@ -844,7 +859,7 @@ elif DEBUG == 0:
                        #ev_name = 'Yoga for Success'
                        ev_name = 'Yoga For Success - Free and Open to All'
                        desc_file = open("event_desc/yoga_for_success.txt", "r")
-                       ev_poster = cwd + 'posters/yfs.jpg'
+                       ev_poster = cwd + '/posters/yfs.jpg'
                        ev_url = 'http://isha.sadhguru.org/yoga/yoga-programs/upa-yoga/'
                  
                  else:
