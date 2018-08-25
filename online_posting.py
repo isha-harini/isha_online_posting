@@ -59,6 +59,9 @@ from selenium.webdriver.common.action_chains import ActionChains
 from geopy.geocoders import Nominatim
 from datetime import datetime
 
+#denugger stuff
+import pdb
+
 import re
 import time
 import smtplib
@@ -771,6 +774,167 @@ def ishasite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        print(bcolors.HEADER + 'Completed posting to Isha portal' + bcolors.ENDC)
        
 
+#Isha site posting
+def ishasite_tab(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+              ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+                  ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url, centerId, ev_host, ev_presenter):
+       
+       browser_isha.append(webdriver.Chrome(chromedriver_path))
+       #browser_isha.append(webdriver.Chrome('/usr/local/bin/chromedriver'))
+       browser = browser_isha[len(browser_isha)-1]
+       
+       wait = WebDriverWait(browser, 60)
+       browser.get('https://innerengineering.com/ieo/newadmin/login.php')
+
+       #credentials
+       path = "//*[@id='login']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(isha_login)
+ 
+       path = "//*[@id='password']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.send_keys(isha_password)
+      
+       path = "/html/body/div/form/div/div[3]/button"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.click()
+
+       time.sleep(3) 
+       browser.get('https://innerengineering.com/ieo/newadmin/freeEvents.php?act=Add')
+
+       time.sleep(3) 
+       #event type
+       path = "//*[@id='event_type_id']"                 
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       for option in ele.find_elements_by_tag_name('option'):
+             if option.text.lower() in ev_name.lower():
+                option.click()
+                break
+
+       #country
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+
+       #state       
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys("Michigan"); actions.perform()
+
+       #Category
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys("Other"); actions.perform()
+
+       #Center Id
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys("Detroit MI"); actions.perform()
+
+       #Event Status
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys("Active"); actions.perform()
+
+       #Program Type
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(ev_name); actions.perform()
+
+       #Event Description
+       for i in range(1, 13):
+            actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+            time.sleep(3)
+
+       #Should have reached event descr
+       actions = ActionChains(browser); actions.send_keys(ev_desc); actions.perform()
+
+       #Address line 1
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(ev_addr_l1); actions.perform()
+
+       #Address line 2
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(ev_addr_l2); actions.perform()
+
+       #City
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(ev_city); actions.perform()
+
+       #Zip code
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(ev_zip); actions.perform()
+
+       geolocator = Nominatim()
+       addr = ev_addr_l1 + ', ' + ev_city + ', ' + ev_state
+       location = geolocator.geocode(addr)
+       #Latitude
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(str(location.latitude)); actions.perform()
+
+       #Longitude
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(str(location.longitude)); actions.perform()
+
+       #pdb.set_trace()
+
+       #event date
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(Keys.DELETE); actions.perform()
+       date = ev_year + '-' + ev_month + '-' + ev_date
+       actions = ActionChains(browser); actions.send_keys(date); actions.perform()
+       
+       #pdb.set_trace()
+
+       #start time
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       stime = ev_shour + ':' + ev_smin + ' ' + ev_sampm.upper()
+       actions = ActionChains(browser); actions.send_keys(stime); actions.perform()
+
+       #end time
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       etime = ev_ehour + ':' + ev_emin + ' ' + ev_eampm.upper()
+       actions = ActionChains(browser); actions.send_keys(etime); actions.perform()
+
+       #host
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       time.sleep(1)
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(ev_host); actions.perform()
+
+       #presenter
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(ev_presenter); actions.perform()
+
+       #Program details
+
+       #start time
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(stime); actions.perform()
+
+       #end time
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(etime); actions.perform()
+
+       #RSVP
+       #actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       #actions = ActionChains(browser); actions.click(); actions.perform()
+
+       #public event
+       path = "//*[@id='event_type']"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.click()
+
+       print(bcolors.HEADER + 'Completed posting to Isha portal' + bcolors.ENDC)
+       
+
+
+if DEBUG == 1:
+       ev_name = 'Meditation for Beginners'
+       ev_month = '09'
+       ev_date = '23'
+       ev_year = '2018'
+       ev_shour = '5'
+       ev_smin = '45'
+       ev_sampm = 'PM'
+       ev_ehour = '6'
+       ev_emin = '45'
+       ev_eampm = 'PM'
+       ev_venue = 'Ann Arbor District Library'
+
 if DEBUG == 1:
        ev_name = 'Meditation for Beginners'
        ev_month = '09'
@@ -987,19 +1151,19 @@ elif DEBUG == 0:
                  print('Event host: ' + ev_host)
                  print('Event presenter: ' + ev_presenter)
                  
-                 eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
-                               ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
-                                  ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
-                 
-                 patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
-                              ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
-                                  ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
-                 
-                 meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
-                              ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
-                                  ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+                 #eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+                 #              ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+                 #                 ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+                 #
+                 #patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+                 #             ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+                 #                 ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+                 #
+                 #meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+                 #             ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+                 #                 ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
 
-                 ishasite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+                 ishasite_tab(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
                               ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
                                   ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url, ev_centerid, ev_host, ev_presenter)
 
