@@ -1154,13 +1154,13 @@ elif DEBUG == 0:
                  print('Event host: ' + ev_host)
                  print('Event presenter: ' + ev_presenter)
                  
-                 #eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
-                 #              ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
-                 #                 ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
-                 #
-                 #patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
-                 #             ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
-                 #                 ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+                 eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+                               ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+                                  ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+                 
+                 patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+                              ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+                                  ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
                  
                  meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
                               ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
