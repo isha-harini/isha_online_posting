@@ -7,24 +7,25 @@
 DEBUG = 0 #Debug event posting by turning off GSHEET reading
 
 #Copy and paste the workbook URL here:
-WORKBOOKURL = 'https://docs.google.com/spreadsheets/d/1X7WS6spYZfV2o40Hy2e_D9jZcOD3mlQ6yjcN3UZykDQ/edit?ts=5ae13571#gid=0'
+#WORKBOOKURL = 'https://docs.google.com/spreadsheets/d/1X7WS6spYZfV2o40Hy2e_D9jZcOD3mlQ6yjcN3UZykDQ/edit?ts=5ae13571#gid=0'
+WORKBOOKURL = 'https://docs.google.com/spreadsheets/d/1fLOhwdIiVOQaNHdrKYt6JeY924jW66Ag6I-r2av-LhQ/edit?usp=sharing'
 
 #Column names of different event details
 C_EVENT_TYPE = 'A'
 C_POSTING_STATUS = 'B'
-C_DATE = 'F'
-C_START_TIME = 'G'
-C_END_TIME = 'H'
-C_VENUE = 'I'
-C_ADDR_LINE1 = 'J'
-C_ADDR_LINE2 = 'K'
-C_CITY = 'L'
-C_STATE = 'M'
+C_DATE = 'G'
+C_START_TIME = 'H'
+C_END_TIME = 'I'
+C_VENUE = 'J'
+C_ADDR_LINE1 = 'K'
+C_ADDR_LINE2 = 'L'
+C_CITY = 'M'
+C_STATE = 'O'
 C_ZIP = 'N'
 C_CENTERID = 'O'
-C_HOST = 'P'
-C_PRESENTER = 'Q'
-START_ROW = 2
+C_HOST = 'T'
+C_PRESENTER = 'U'
+START_ROW = 116
 
 #login details
 #Eventbrite
@@ -120,8 +121,8 @@ def eventbrite(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        curpath = "//*[@id='signin-email']"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
        ele.send_keys(eb_login)
-       
-       curpath = "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/form/div[2]/button"
+                  
+       curpath = "//*[@id='root']/div/div[2]/div/div/div/div[1]/div/main/div/div/div/div[2]/form/div[2]/button"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, curpath)))
        ele.click()
        
@@ -366,39 +367,42 @@ def patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        event_stime = ev_shour + ':' + ev_smin + ev_sampm
        ele.send_keys(event_stime)
        
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(ev_venue + ', ' + ev_addr_l1 + ', ' + ev_addr_l2 + ', ' + ev_city + ', ' + state_name[ev_state] + ' ' + ev_zip); actions.perform()
        
        #venue
-       path = "//*[@id='edit-field-calendar-address-und-0-name-line']"
-       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-       ele.send_keys(ev_venue)
+       #path = "//*[@id='edit-field-calendar-address-und-0-name-line']"
+       #ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       #ele.send_keys(ev_venue)
        
        #addr line 1
-       path = "//*[@id='edit-field-calendar-address-und-0-thoroughfare']"
-       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-       ele.send_keys(ev_addr_l1)
-       
-       #addr line 2
-       path = "//*[@id='edit-field-calendar-address-und-0-premise']"
-       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-       ele.send_keys(ev_addr_l2)
-       
-       #city
-       path = "//*[@id='edit-field-calendar-address-und-0-locality']"
-       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-       ele.send_keys(ev_city)
-       
-       #state
-       path = "//*[@id='edit-field-calendar-address-und-0-administrative-area']"
-       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-       for option in ele.find_elements_by_tag_name('option'):
-            if option.text.lower() == state_name[ev_state].lower():
-                option.click()
-                break
-       
-       #zip
-       path = "//*[@id='edit-field-calendar-address-und-0-postal-code']"
-       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-       ele.send_keys(ev_zip)
+       #path = "//*[@id='edit-field-calendar-address-und-0-thoroughfare']"
+       #ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       #ele.send_keys(ev_addr_l1)
+       #
+       ##addr line 2
+       #path = "//*[@id='edit-field-calendar-address-und-0-premise']"
+       #ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       #ele.send_keys(ev_addr_l2)
+       #
+       ##city
+       #path = "//*[@id='edit-field-calendar-address-und-0-locality']"
+       #ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       #ele.send_keys(ev_city)
+       #
+       ##state
+       #path = "//*[@id='edit-field-calendar-address-und-0-administrative-area']"
+       #ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       #for option in ele.find_elements_by_tag_name('option'):
+       #     if option.text.lower() == state_name[ev_state].lower():
+       #         option.click()
+       #         break
+       #
+       ##zip
+       #path = "//*[@id='edit-field-calendar-address-und-0-postal-code']"
+       #ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       #ele.send_keys(ev_zip)
        
        
        #event desc
@@ -444,10 +448,9 @@ def meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        browser.get('https://www.meetup.com/Isha-Yoga-Detroit-Free-Meditation-Classes/schedule/#changeVenue')
 
        time.sleep(3)
-
        
        #event name
-       path = "//*[@id='additionalPanels_name']"
+       path = "//*[@id='name']"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        ele.send_keys(ev_name)
 
@@ -475,50 +478,50 @@ def meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        
 
        #number of clicks to reach correct month
-       if idx > int(ev_month): #month is in the next year
-          num_clicks = int(ev_month) + 12 - idx
-       else:
-          num_clicks = int(ev_month) - idx
+       #if idx > int(ev_month): #month is in the next year
+       #   num_clicks = int(ev_month) + 12 - idx
+       #else:
+       #   num_clicks = int(ev_month) - idx
 
-       time.sleep(3)
+       #time.sleep(3)
 
-       while num_clicks > 0:
-          path = "/html/body/div[2]/div[1]/span[2]"
-          ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-          ele.click()
-          num_clicks = num_clicks - 1
-          time.sleep(3)
+       #while num_clicks > 0:
+       #   path = "/html/body/div[3]/div[1]/span[2]"
+       #   ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       #   ele.click()
+       #   num_clicks = num_clicks - 1
+       #   time.sleep(3)
 
-       #date
-       idx = 1
-       while 1:
-            path = '/html/body/div[2]/div[2]/div/div[2]/div/span[' + str(idx) + ']'                        
-            ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-            if ele.text == '1':
-                break
-            idx = idx + 1
+       ##date
+       #idx = 1
+       #while 1:
+       #     path = '/html/body/div[2]/div[2]/div/div[2]/div/span[' + str(idx) + ']'                        
+       #     ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       #     if ele.text == '1':
+       #         break
+       #     idx = idx + 1
 
-       date_idx = idx + int(ev_date) - 1
-       path = '/html/body/div[2]/div[2]/div/div[2]/div/span[' + str(date_idx) + ']'                        
-       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-       ele.click()
+       #date_idx = idx + int(ev_date) - 1
+       #path = '/html/body/div[2]/div[2]/div/div[2]/div/span[' + str(date_idx) + ']'                        
+       #ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       #ele.click()
 
        #start time
-       path = "//*[@id='startDatetime--time']"
+       path = "//*[@id='start_time']"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        input_data = ev_shour + ':' + ev_smin
        ele.send_keys(input_data)
        ele.send_keys(ev_sampm)
 
        #end time
-       path = "//*[@id='endDatetime--time']"
+       path = "//*[@id='end_time']"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        input_data = ev_ehour + ':' + ev_emin
        ele.send_keys(input_data)
        ele.send_keys(ev_eampm)
 
        #add location
-       path = "//*[@id='venuePicker-searchResultList']"
+       path = "//*[@id='searchVenues-searchResultInput']"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        ele.send_keys(ev_venue)
 
@@ -526,37 +529,37 @@ def meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        actions.send_keys(Keys.ESCAPE)
        actions.perform()
 
-       path = "//*[@id='eventScheduleForm']/section[3]/div/div/section/div/div[2]/div[1]/ul/li/a/span"
+       path = "//*[@id='mupMain']/form/div[1]/div/div/section[4]/div/div/section/div/fieldset/div[1]/button"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        ele.click()
 
        #venue name
-       path = "//*[@id='addVenue_name']"       
-       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-       ele.send_keys(ev_venue)
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       actions = ActionChains(browser); actions.send_keys(ev_venue); actions.perform()
 
        #addr line1
-       path = "//*[@id='addVenue_address_1']"
+       path = "//*[@id='address_1']"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        ele.send_keys(ev_addr_l1)
 
        #addr line2
-       path = "//*[@id='addVenue_address_2']"
+       path = "//*[@id='address_2']"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        ele.send_keys(ev_addr_l2)
 
        #city
-       path = "//*[@id='addVenue_city']"
+       path = "//*[@id='city']"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        ele.send_keys(ev_city)
 
        #zip
-       path = "//*[@id='addVenue_zip']"
+       path = "//*[@id='zip']"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        ele.send_keys(ev_zip)
 
        #state
-       path = "//*[@id='addVenue_state']"
+       path = "//*[@id='state']"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        for option in ele.find_elements_by_tag_name('option'):
             if option.text.lower() == state_name[ev_state].lower():
@@ -564,13 +567,13 @@ def meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
                 break
 
        #submit
-       path = "//*[@id='eventScheduleForm']/section[3]/div/div/section/div/div[2]/div[8]/div[1]/div/div[2]/button"
+       path = "//*[@id='mupMain']/form/div[1]/div/div/section[4]/div/div/section/div/fieldset/fieldset/div[8]/div/div[2]/button"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        ele.click()
 
        #image upload
-       #path = "//*[@id='eventScheduleForm']/section[4]/div/div/section/div/div[2]/div/input"
-       path = "//*[@id='uploadButton-submit']/div/input"
+       path = "//*[@id='eventScheduleForm']/section[4]/div/div/section/div/div[2]/div/input"
+       path = "//*[@id='uploadButton-submit']/input"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        ele.send_keys(ev_poster)
 
@@ -587,13 +590,13 @@ def meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        ele.send_keys(ev_desc)
 
        #attendee limit
-       path = "//*[@id='additionalPanels_rsvp_limit']"
+       path = "//*[@id='rsvp_limit']"
        ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
        ele.send_keys('108')
 
-       path = "//*[@id='eventScheduleForm']/section[5]/div/div/section/div/div[6]/label/div/div[1]/span"
-       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
-       ele.click()
+       #path = "//*[@id='eventScheduleForm']/section[5]/div/div/section/div/div[6]/label/div/div[1]/span"
+       #ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       #ele.click()
        
        print(bcolors.HEADER + 'Completed posting to Meetup' + bcolors.ENDC)
 
@@ -843,7 +846,7 @@ def ishasite_tab(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        actions = ActionChains(browser); actions.send_keys(ev_desc); actions.perform()
 
        #Address line 1
-       actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
+       #actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
        actions = ActionChains(browser); actions.send_keys(ev_addr_l1); actions.perform()
 
        #Address line 2
@@ -995,14 +998,14 @@ elif DEBUG == 0:
       ev_poster = ''
       desc_file = ''
       ev_url = ''
-      
+
       while 1:
          if esheet.acell(C_EVENT_TYPE + str(ev_idx)).value: #there is an event in this row
              if not esheet.acell(C_POSTING_STATUS + str(ev_idx)).value: #not yet posted
                  #EVENT TYPE
                  ev_type = esheet.acell(C_EVENT_TYPE + str(ev_idx)).value
                  ev_name = ''
-                 if 'meditation for beginners' in ev_type.lower():
+                 if 'mfb' in ev_type.lower():
                        print(bcolors.HEADER + 'Meditation for Beginners identified' + bcolors.ENDC)
                        ev_name = 'Meditation for Beginners'
                        ev_name = 'Meditation for Beginners (Isha Kriya) - Free Class'
@@ -1010,7 +1013,7 @@ elif DEBUG == 0:
                        ev_poster = cwd + '/posters/ishakriya.jpg'
                        ev_url = 'http://www.ishafoundation.org/Ishakriya'
                  
-                 elif 'yoga for beginners' in ev_type.lower():
+                 elif 'yfb' in ev_type.lower():
                        print(bcolors.HEADER + 'Yoga for Beginners identified' + bcolors.ENDC)
                        #ev_name = 'Yoga for Beginners'
                        ev_name = 'Yoga for Beginners - Free Class (Upa Yoga)'
@@ -1018,7 +1021,7 @@ elif DEBUG == 0:
                        ev_poster = cwd + '/posters/yfb.jpg'
                        ev_url = 'http://isha.sadhguru.org/yoga/yoga-programs/upa-yoga/'
                  
-                 elif 'yoga for success' in ev_type.lower():
+                 elif 'yfs' in ev_type.lower():
                        print(bcolors.HEADER + 'Yoga for Success identified' + bcolors.ENDC)
                        #ev_name = 'Yoga for Success'
                        ev_name = 'Yoga For Success - Free and Open to All'
@@ -1158,10 +1161,10 @@ elif DEBUG == 0:
                  #patch(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
                  #             ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
                  #                 ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
-                 #
-                 #meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
-                 #             ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
-                 #                 ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
+                 
+                 meetup(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
+                              ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
+                                  ev_addr_l1, ev_addr_l2, ev_city, ev_state, ev_zip, ev_desc, ev_poster, ev_url)
 
                  ishasite_tab(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin, 
                               ev_sampm, ev_ehour, ev_emin, ev_eampm, ev_venue, 
