@@ -30,7 +30,7 @@ START_ROW = 116
 #login details
 #Facebook
 facebook_login = 'isha.harini.umich@gmail.com'
-facebook_password = 'Mahadeva@20'
+facebook_password = 'Msr2020'
 
 #State name - code dictionary
 state_name = {
@@ -416,7 +416,7 @@ def facebook(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        month_list_facebook = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
        
        wait = WebDriverWait(browser, 60)
-       browser.get('https://facebook.com/events')
+       browser.get('https://facebook.com')
        
        ##credentials
        path = "/html/body/div[1]/div[2]/div/div/div[1]/div/div[2]/form/table/tbody/tr[2]/td[1]/input"
@@ -433,14 +433,29 @@ def facebook(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        
        time.sleep(3)
        
+       #Events on a page
+       browser.get('https://www.facebook.com/pg/My-Sample-Page-100827264767701/events/')
+       actions = ActionChains(browser)
+       actions.send_keys(Keys.ESCAPE)
+       actions.perform()
+       actions = ActionChains(browser)
+       actions.send_keys(Keys.ESCAPE)
+       actions.perform()
+
+       #Click on 'Create an event'
+
+       path = "/html/body/div[1]/div[3]/div[1]/div/div/div[2]/div[2]/div[2]/div/div[2]/div/div[1]/div/div[1]/a"
+       ele = wait.until(EC.presence_of_element_located((By.XPATH, path)))
+       ele.click()
+
+       pdb.set_trace()
+      
+       #Events on my wall
 
        browser.get('https://www.facebook.com/events/#')
        actions = ActionChains(browser)
        actions.send_keys(Keys.ESCAPE)
        actions.perform()
-
-       seq = browser.find_elements_by_tag_name('iframe')
-       print("No of frames present in the web page before click are: ", len(seq))
 
        #Create an event
        path = "/html/body/div[1]/div[3]/div[1]/div/div[1]/div/div/div[3]/div/div/a/span[2]"
@@ -455,8 +470,8 @@ def facebook(ev_name, ev_month, ev_date, ev_year, ev_shour, ev_smin,
        ele.click()
 
        time.sleep(3)
-
-
+       
+       #Use tab keys to navigate
        actions = ActionChains(browser); actions.send_keys(ev_name); actions.perform()
        actions = ActionChains(browser); actions.send_keys(Keys.TAB); actions.perform()
        actions = ActionChains(browser); actions.send_keys(ev_venue); actions.perform()
